@@ -112,3 +112,40 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "status",
         ]
+
+        read_only_fields = ["id", "created_at", "status"]
+        extra_kwargs = {
+            "customer": {"required": True},
+            "products": {"required": True},
+            "total_amount": {"required": True},
+        }
+
+
+class CartSerializer(serializers.ModelSeriaizer):
+    """
+    Serializer for Cart model
+    """
+
+    class Meta:
+        model = Cart
+        fields = ["id", "customer", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for CartItem model
+    """
+
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = CartItem
+        fields = ["id", "cart", "product", "quantity"]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "cart": {"required": True},
+            "product": {"required": True},
+            "quantity": {"required": True},
+            "id": {"read_only": True},
+        }
