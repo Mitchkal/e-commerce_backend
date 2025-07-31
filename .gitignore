@@ -1,4 +1,5 @@
 myenv/
 .env
-environfile
+*.env
+.env.*
 test.md
