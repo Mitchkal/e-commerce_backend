@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer
+from .models import Customer, Product, Order, Cart, CartItem
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -74,3 +74,29 @@ class RegisterSerializer(serializers.ModelSerializer):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+
+
+class ProductSerializer(serializers.ModelSerializers):
+    """
+    Serializer for the product model
+    """
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "description",
+            "price",
+            "image",
+            "stock",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Order model
+    """
