@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomerManager(BaseUserManager):
@@ -60,3 +61,38 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+def product_directory_path(instance, filename):
+    """
+    Returns path to product image directory
+    """
+    return f"products/{instance.id}/{filename}"
+
+
+class Product(models.Model):
+    """
+    product model
+    """
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeFieldd(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_in_stock = models.BooleanField(default=True)
+    image = models.ImageField(upload_to=product_directory_path, blank=True, null=True)
+    category = models.CharField(max_length=100, blank=True, null=True)
+    tags = models.CharField(max_length=100, blank=True, null=True)
+    rating = models.DecimalField(
+        max_digits=3, decimal_places=2, default=0.0, blank=True, null=True
+    )
+    discount = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0, blank=True, null=True
+    )
+    is_featured = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
