@@ -114,7 +114,7 @@ class ProductViewset(viewsets.ModelViewSet):
         )
 
 
-class CartViewSet(viewsets.ModelViewset):
+class CartViewSet(viewsets.ModelViewSet):
     """
     Viewset for the cart model
     """
@@ -139,15 +139,15 @@ class CartViewSet(viewsets.ModelViewset):
         return Response(serializer.data)
 
 
-class CartItemViewSet(viewsets.ModelViewSet):
+class CartItemViewset(viewsets.ModelViewSet):
     """
     Viewset for CartItem model
     """
 
-    aerializer_class = CartItemSerializer
+    serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_quesryset(self):
+    def get_queryset(self):
         """
         Return cart Items for the authenticated user
         """

@@ -76,7 +76,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
 
-class ProductSerializer(serializers.ModelSerializers):
+class ProductSerializer(serializers.ModelSerializer):
     """
     Serializer for the product model
     """
@@ -121,7 +121,7 @@ class OrderSerializer(serializers.ModelSerializer):
         }
 
 
-class CartSerializer(serializers.ModelSeriaizer):
+class CartSerializer(serializers.ModelSerializer):
     """
     Serializer for Cart model
     """
