@@ -134,3 +134,32 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} - {self.customer.email} - {self.status}"
+
+
+class Cart(models.Model):
+    """
+    Cart modeel
+    """
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    products = models.ManyToManyField(Product, through="CartItem")
+
+    def __str__(self):
+        return f"Cart {self.id} - {self.customer.email}"
+
+
+class CartItem(models.Model):
+    """
+    Model for cart items
+    """
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"Cart Item {self.id} - {self.cart.id} - {self.product.name}"
