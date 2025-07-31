@@ -41,6 +41,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     Extends default django user model to include additional fields.
     """
 
+    id = models.UUIDFIeld(primary_key=True, editable=False)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)

@@ -100,3 +100,15 @@ class OrderSerializer(serializers.ModelSerializer):
     """
     Serializer for Order model
     """
+
+    class Meta:
+        model = Order
+        fieds = [
+            "id",
+            "customer",
+            "products",
+            "total_amount",
+            "status",
+            "created_at",
+            "status",
+        ]
