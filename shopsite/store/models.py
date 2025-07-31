@@ -96,3 +96,41 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class OrderStatus(models.TextChoices):
+    """
+    Enum for order status
+    """
+
+    PENDING = "PENDING", _("Pending")
+    CREATED = "CREATED", _("Created")
+    PROCESSING = "PROCESSING", _("Processing")
+    SHIPPED = "SHIPPED", _("Shipped")
+    COMPLETED = "COMPLETED", _("Completed")
+    CANCELLED = "CANCELLED", _("Cancelled")
+    REFUNDED = "REFUNDED", _("Refunded")
+
+
+class Order(models.Model):
+    """
+    Order model
+    """
+
+    id = models.UUIDFIeld(primary_key=True, editable=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    total_price = models.DecimalField(max_digits=10, deimal_places=2, default=0.0)
+    order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=50,
+        choices=OrderStatus.choices,
+        default=OrderStatus.PENDING,
+    )
+    shipping_address = models.CharField(max_length=255, blank=True, null=True)
+    billing_address = models.CharField(max_length=255, blank=True, null=True)
+    tracking_number = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.customer.email} - {self.status}"
