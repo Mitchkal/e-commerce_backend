@@ -65,7 +65,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-    def get_token(self, obj):
+    def get_token(self, obj: Customer) -> dict:
         """
         Generate JWT token for user
         """
@@ -92,6 +92,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "stock",
             "created_at",
             "updated_at",
+            "category",
+            "tags",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
@@ -103,17 +105,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fieds = [
+        fields = [
             "id",
             "customer",
-            "products",
-            "total_amount",
+            "product",
+            "total_price",
             "status",
-            "created_at",
+            "order_date",
             "status",
         ]
 
-        read_only_fields = ["id", "created_at", "status"]
+        read_only_fields = ["id", "order_date", "status"]
         extra_kwargs = {
             "customer": {"required": True},
             "products": {"required": True},

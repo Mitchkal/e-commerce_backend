@@ -79,7 +79,7 @@ class ProductViewset(viewsets.ModelViewSet):
                 {"message": "Product is out of stock"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        cart, created = Cart.objects.get_or_create(User, request.user)
+        cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart, product=product, defaults={"quantity": 1}
         )
@@ -119,7 +119,7 @@ class CartViewSet(viewsets.ModelViewSet):
     Viewset for the cart model
     """
 
-    # queryset = Cart.objects.all()
+    queryset = Cart.objects.none()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
@@ -144,6 +144,7 @@ class CartItemViewset(viewsets.ModelViewSet):
     Viewset for CartItem model
     """
 
+    queryset = CartItem.objects.none()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 
