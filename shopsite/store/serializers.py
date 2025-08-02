@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Product, Order, Cart, CartItem
+from .models import Customer, Product, Order, Cart, CartItem, Review
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -81,6 +81,10 @@ class ProductSerializer(serializers.ModelSerializer):
     Serializer for the product model
     """
 
+    is_in_stock = serializers.BooleanField(
+        source="annotated_is_in_stock", read_only=True
+    )
+
     class Meta:
         model = Product
         fields = [
@@ -94,6 +98,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "category",
             "tags",
+            "is_in_stock",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 

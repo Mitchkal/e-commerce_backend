@@ -16,6 +16,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import ProductFilter
+from django.db.models import Case, When, BooleanField, Value, IntegerField
 
 User = get_user_model()
 
@@ -65,8 +68,22 @@ class ProductViewset(viewsets.ModelViewSet):
     Viewset for Product Model
     """
 
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
+
+    def get_queryset(self):
+        """
+        queryset for product model
+        """
+        return Product.objects.annotate(
+            annotated_is_in_stock=Case(
+                When(stock__gt=0, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def add_to_cart(self, request, pk=None):

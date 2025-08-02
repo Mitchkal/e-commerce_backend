@@ -84,7 +84,6 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_in_stock = models.BooleanField(default=True)
     image = models.ImageField(upload_to=product_directory_path, blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True)
     tags = models.CharField(max_length=100, blank=True, null=True)
@@ -95,6 +94,13 @@ class Product(models.Model):
         max_digits=5, decimal_places=2, default=0.0, blank=True, null=True
     )
     is_featured = models.BooleanField(default=False)
+
+    @property
+    def is_in_stock(self):
+        """
+        Returns True if product is in stock else False
+        """
+        return self.stock > 0
 
     def __str__(self):
         return self.name
@@ -123,7 +129,7 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    # total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     order_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=50,
@@ -136,6 +142,13 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} - {self.customer.email} - {self.status}"
+
+    @property
+    def total_price(self):
+        """
+        Returns the total price of the order
+        """
+        return self.quantity * self.product.price
 
 
 class Cart(models.Model):
@@ -165,3 +178,17 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"Cart Item {self.id} - {self.cart.id} - {self.product.name}"
+
+
+class Review(models.Model):
+    """
+    Model for product Reviews
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
+    rating = models.PositiveIntegerField(default=0)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

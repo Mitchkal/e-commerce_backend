@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "rest_framework_swagger",
     "drf_spectacular",
     "drf_spectacular_sidecar",
+    "django_filters",
 ]
 
 REST_FRAMEWORK = {
