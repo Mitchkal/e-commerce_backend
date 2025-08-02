@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Customer, Product, Order, Cart, CartItem
+from .models import Customer, Product, Order, Cart, CartItem, Review
 from .serializers import (
     CustomerSerializer,
     RegisterSerializer,
@@ -7,6 +7,7 @@ from .serializers import (
     OrderSerializer,
     CartSerializer,
     CartItemSerializer,
+    ReviewSerializer,
 )
 
 # from rest_framework import generics
@@ -229,3 +230,29 @@ class OrderViewset(viewsets.ModelViewSet):
                 {"message": "Order cancellation not implemented"},
                 status=status.HTTP_501_NOT_IMPLEMENTED,
             )
+
+
+class ReviewViewset(viewsets.ModelViewSet):
+    """
+    Viewset for Review model
+    """
+
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        """
+        Save a review with the authenticated user as author
+        """
+        serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        """
+        return reviews filtered by product
+        """
+        product_id = self.kwargs.get("product_id")
+
+        if product_id:
+            return Review.objects.filter(product_id=product_id)
+        return Review.objects.all()

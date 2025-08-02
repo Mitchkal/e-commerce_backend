@@ -156,3 +156,20 @@ class CartItemSerializer(serializers.ModelSerializer):
             "quantity": {"required": True},
             "id": {"read_only": True},
         }
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Review model
+    """
+
+    class Meta:
+        model = Review
+        fields = ["id", "product", "customer", "rating", "comment", "created_at"]
+        read_only_fields = ["id", "created_at"]
+        extra_kwargs = {
+            "product": {"required": True},
+            "customer": {"required": True},
+            "rating": {"required": True},
+            "comment": {"required": False},
+        }
