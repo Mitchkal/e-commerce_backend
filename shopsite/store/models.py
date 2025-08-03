@@ -133,9 +133,14 @@ class Order(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name="orders"
+    )
+    # For multiple cart items
+    products = models.ManyToManyField(
+        Product, through="CartItem", blank=True, related_name="orders"
+    )
+
     # total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     order_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
@@ -153,24 +158,48 @@ class Order(models.Model):
     @property
     def total_price(self):
         """
-        Returns the total price of the order
+        Returns the total price of the order by summing price
+        * quantity for each related CartItem.
         """
-        return self.quantity * self.product.price
+        return sum(
+            item.quantity * item.product.price for item in self.cartitem_set.all()
+        )
+        # return total
+        #     for item in self.cartitem_set.all()
+        # )
 
 
 class Cart(models.Model):
     """
-    Cart modeel
+    Cart model
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    products = models.ManyToManyField(Product, through="CartItem")
+    products = models.ManyToManyField(Product, through="OrderItem", blank=True)
 
     def __str__(self):
         return f"Cart {self.id} - {self.customer.email}"
+
+
+class OrderItem(models.Model):
+    """
+    Model for order items
+    """
+
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="order_items"
+    )
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="order_items"
+    )
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.order.id} - {self.quantity}"
 
 
 class CartItem(models.Model):
@@ -178,9 +207,11 @@ class CartItem(models.Model):
     Model for cart items
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="cart_items"
+    )
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -237,3 +268,10 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.payment_uuid} - {self.order.id if self.order else 'N/A'} - {self.status}"
+
+    @property
+    def is_succesful(self):
+        """
+        Return True on succesful payment else False
+        """
+        return self.status == PaymentStatus.COMPLETED

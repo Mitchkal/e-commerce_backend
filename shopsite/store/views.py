@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Customer, Product, Order, Cart, CartItem, Review
+from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from .serializers import (
     CustomerSerializer,
     RegisterSerializer,
@@ -8,6 +8,8 @@ from .serializers import (
     CartSerializer,
     CartItemSerializer,
     ReviewSerializer,
+    PaymentSerializer,
+    OrderItemSerializer,
 )
 
 # from rest_framework import generics
@@ -22,6 +24,7 @@ from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
 from .permissions import IsStaffOrReadOnly
 from .pagination import ProductPagination, OrderPagination
+
 
 User = get_user_model()
 
@@ -218,14 +221,20 @@ class OrderViewset(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-        def make_payment(self, reuest, args, **kwargs):
-            """
-            placeholder for payment processing
-            """
-            return Response(
-                {"message": "Payment processing not implemented"},
-                status=status.HTTP_501_NOT_IMPLEMENTED,
-            )
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def initiate_payment(self, request, args, **kwargs):
+        """
+        Payment processing with Paystack
+        """
+        pass
+        # order = self.get_object()
+
+        # if order.status
+
+        # return Response(
+        #     {"message": "Payment processing not implemented"},
+        #     status=status.HTTP_501_NOT_IMPLEMENTED,
+        # )
 
         def cancel_order(self, request, args, **kwargs):
             """
@@ -235,6 +244,16 @@ class OrderViewset(viewsets.ModelViewSet):
                 {"message": "Order cancellation not implemented"},
                 status=status.HTTP_501_NOT_IMPLEMENTED,
             )
+
+
+class OrderItemViewset(viewsets.ModelViewSet):
+    """
+    Viewset for orderItem model
+    """
+
+    queyset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ReviewViewset(viewsets.ModelViewSet):
@@ -261,3 +280,25 @@ class ReviewViewset(viewsets.ModelViewSet):
         if product_id:
             return Review.objects.filter(product_id=product_id)
         return Review.objects.all()
+
+
+class PaymentViewset(viewsets.ModelViewSet):
+    """
+    Viewset for payment model
+    """
+
+    queryset = Payment.objects.all()
+    serializer = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create payment for an order
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(customer=request.user.customer)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )

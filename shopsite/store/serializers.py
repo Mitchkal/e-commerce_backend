@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Product, Order, Cart, CartItem, Review
+from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -158,6 +158,29 @@ class CartItemSerializer(serializers.ModelSerializer):
         }
 
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    """
+    serializer for ordritem model
+    """
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "cart",
+            "order",
+            "product",
+            "quantity",
+        ]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "cart": {"required": True},
+            "order": {"required": True},
+            "product": {"required": True},
+            "quantity": {"required": True},
+        }
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     """
     Serializer for Review model
@@ -172,4 +195,30 @@ class ReviewSerializer(serializers.ModelSerializer):
             "customer": {"required": True},
             "rating": {"required": True},
             "comment": {"required": False},
+        }
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for payment model
+    """
+
+    class Meta:
+        model = Payment
+        fields = [
+            "payment_uuid",
+            "order",
+            "amount",
+            "status",
+            "payment_status",
+            "payment_date",
+            "payment_method",
+        ]
+        read_only_fields = ["payment_uuid", "payment_date"]
+        extra_kwargs = {
+            "order": {"required": True},
+            "amount": {"required": True},
+            "status": {"required": True},
+            "payment_method": {"required": True},
+            "payment_status": {"required": True},
         }
