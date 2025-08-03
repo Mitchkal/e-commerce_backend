@@ -205,3 +205,17 @@ class Payment(models.Model):
     """
     Model for payments
     """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_method = models.CharField(max_length=50, blank=True, null=True)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["-payment_date"], name="payment_date_idx"),
+            models.Index(fields=["-amount"], name="payment_amount_idx"),
+        ]
+        ordering = ["-amount"]
