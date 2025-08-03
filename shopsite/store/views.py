@@ -20,6 +20,8 @@ from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
+from .permissions import IsStaffOrReadOnly
+from .pagination import ProductPagination, OrderPagination
 
 User = get_user_model()
 
@@ -73,6 +75,8 @@ class ProductViewset(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
+    permission_classes = [IsStaffOrReadOnly]
+    paginaton_class = ProductPagination
 
     def get_queryset(self):
         """
@@ -185,6 +189,7 @@ class OrderViewset(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = OrderPagination
 
     def create(self, request, *args, **kwargs):
         """
