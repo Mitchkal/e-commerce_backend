@@ -95,6 +95,13 @@ class Product(models.Model):
     )
     is_featured = models.BooleanField(default=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["-price"], name="product_price_idx"),
+            models.Index(fields=["-stock"], name="product_stock_idx"),
+        ]
+        ordering = ["-price"]
+
     @property
     def is_in_stock(self):
         """
@@ -192,3 +199,9 @@ class Review(models.Model):
     rating = models.PositiveIntegerField(default=0)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Payment(models.Model):
+    """
+    Model for payments
+    """

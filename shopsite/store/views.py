@@ -82,7 +82,7 @@ class ProductViewset(viewsets.ModelViewSet):
         """
         queryset for product model
         """
-        return Product.objects.annotate(
+        return Product.objects.order_by("-price").annotate(
             annotated_is_in_stock=Case(
                 When(stock__gt=0, then=Value(True)),
                 default=Value(False),
@@ -186,7 +186,7 @@ class OrderViewset(viewsets.ModelViewSet):
     Viewset for order model
     """
 
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().order_by("-order_date")
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = OrderPagination

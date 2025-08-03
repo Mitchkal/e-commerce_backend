@@ -17,7 +17,7 @@ class ProductFilter(django_filters.FilterSet):
             "category": ["exact"],
             "tags": ["icontains", "exact", "iexact"],
             "description": ["icontains", "exact", "iexact"],
-            "rating": ["lt", "gt", "exact"],
+            # "rating": ["lt", "gt", "exact"],
             "is_featured": ["exact"],
-            "discount": ["lt", "gt", "exact"],
+            # "discount": ["lt", "gt", "exact"],
         }
