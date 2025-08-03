@@ -201,14 +201,29 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class PaymentStatus(models.TextChoices):
+    """
+    Enumeration for payment status
+    """
+
+    PENDING = "PENDING", _("PENDING")
+    COMPLETED = "COMPLETED", _("COMPLETED")
+    FAILED = "FAILED", _("FAILED")
+
+
 class Payment(models.Model):
     """
     Model for payments
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="payments", null=True, blank=True
+    )
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.0, blank=True, null=True
+    )
+    status = models.CharField(max_length=50, default=PaymentStatus.PENDING)
     payment_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, blank=True, null=True)
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
@@ -219,3 +234,6 @@ class Payment(models.Model):
             models.Index(fields=["-amount"], name="payment_amount_idx"),
         ]
         ordering = ["-amount"]
+
+    def __str__(self):
+        return f"Payment {self.payment_uuid} - {self.order.id if self.order else 'N/A'} - {self.status}"
