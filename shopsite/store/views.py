@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.conf import settings
+import requests
 from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from .serializers import (
     CustomerSerializer,
@@ -226,8 +228,89 @@ class OrderViewset(viewsets.ModelViewSet):
         """
         Payment processing with Paystack
         """
-        pass
-        # order = self.get_object()
+
+        order = self.get_object()
+        if order.payment.filter(status="success").exists():
+            return Response({"message": "Order already paid"}, status=400)
+
+        # amount = order.total_amount
+        amount = 3  # fixed amount for testing
+        if not amount:
+            return Response(
+                {"message": "Order total amount not set"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = {
+            "amount": amount * 100,
+            "currency": "KES",
+            "email": order.customer.email,
+            "reference": f"order_{order.id}",
+            "channels": ["mobile_money", "bank", "card", "ussd"],
+            "metadata": {
+                "order_id": order.id,
+                "customer_id": order.customer.id,
+                "customer_name": f"{order.customer.first_name} {order.customer.last_name}",
+                "customer_email": order.customer.email,
+                "order_total": order.total_amount,
+                "cart_id": order.cart.id if order.cart else None,
+                "custom_fields": [
+                    {
+                        "display_name": "Order ID",
+                        "variable_name": order.id,
+                        "value": str(order.id),
+                    },
+                    {
+                        "display_name": "Cart Items",
+                        "variable_name": "cart_items",
+                        "value": ", ".join(
+                            [
+                                str(item.product.name)
+                                for item in order.cart.products.all()
+                            ]
+                        ),
+                    },
+                ],
+            },
+        }
+        headers = {
+            "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+            "Content-Type": "application/json",
+        }
+        transaction_url = "https://api.paystack.co/transaction/initialize"
+        # verify_url = "https://api.paystack.co/transaction/verify/"
+        try:
+            response = requests.post(transaction_url, json=data, headers=headers)
+            response.raise_for_status()
+            payment_data = response.json()
+            if payment_data.get("status") == "true":
+                # create payment record
+                payment = Payment.objects.create(
+                    order=order,
+                    amount=amount,
+                    reference=payment_data["data"]["reference"],
+                    status="pending",
+                )
+                return Response(
+                    {
+                        "message": "Payment initiated succesfully",
+                        "checkout_url": payment_data["data"]["authorization_url"],
+                        "payment_id": payment.id,
+                        "order_id": order.id,
+                        "order_total": order.total_amount,
+                        "customer_email": order.customer.email,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {"message": "Payment initialization failed", "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            return Response(
+                {"message": "An error occured", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         # if order.status
 
