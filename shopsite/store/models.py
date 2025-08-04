@@ -180,6 +180,9 @@ class Cart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     products = models.ManyToManyField(Product, through="OrderItem", blank=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
         return f"Cart {self.id} - {self.customer.email}"
 

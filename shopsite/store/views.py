@@ -49,6 +49,14 @@ class RegisterViewset(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     queryset = Customer.objects.all()
 
+    def get_queryset(self):
+        """
+        avoid listing registered customers
+        """
+        if self.request.method == "GET":
+            return Customer.objects.none()
+        return super().get_queryset()
+
     def create(self, request, *args, **kwargs):
         """
         Handles customer registration
@@ -155,7 +163,7 @@ class CartViewSet(viewsets.ModelViewSet):
         Return cart for authenticated user
         """
         user = self.request.user
-        return Cart.objects.filter(customer__user=user)
+        return Cart.objects.filter(customer=user)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -180,7 +188,9 @@ class CartItemViewset(viewsets.ModelViewSet):
         Return cart Items for the authenticated user
         """
         user = self.request.user
-        cart = Cart.objects.filter(customer__user=user).first()
+        # customer = Customer.objects.get(user=user)
+
+        cart = Cart.objects.filter(customer=user.customer).first()
         if cart:
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()

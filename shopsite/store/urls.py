@@ -10,6 +10,7 @@ from .views import (
     CartItemViewset,
     ReviewViewset,
 )
+from .webhook import paystack_webhook
 
 
 router = DefaultRouter()
@@ -24,6 +25,7 @@ router.register(r"reviews", ReviewViewset, basename="review")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("webhook/paystack/", paystack_webhook, name="paystack-webhook"),
 ]
 # urlpatterns = router.urls
 
