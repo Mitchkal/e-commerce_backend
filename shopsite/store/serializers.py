@@ -103,18 +103,48 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at"]
 
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    """
+    serializer for orderitem model
+    """
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "order",
+            "product",
+            "quantity",
+        ]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            # "cart": {"required": True},
+            "order": {"required": True},
+            "product": {"required": True},
+            "quantity": {"required": True},
+        }
+
+
 class OrderSerializer(serializers.ModelSerializer):
     """
     Serializer for Order model
     """
+
+    items = OrderItemSerializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
             "id",
             "customer",
-            "product",
+            "cart",
+            "items",
             "total_price",
+            "shipping_address",
+            "billing_address",
+            # "products",
+            # "total_price",
             "status",
             "order_date",
             "status",
@@ -123,9 +153,15 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "order_date", "status"]
         extra_kwargs = {
             "customer": {"required": True},
-            "products": {"required": True},
-            "total_amount": {"required": True},
+            #     "products": {"required": True},
+            #     "total_amount": {"required": True},
         }
+
+    def get_total_price(self, obj) -> float:
+        """
+        Calculate total price of order
+        """
+        return sum(item.product.price * item.quantity for item in obj.items.all())
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -135,7 +171,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ["id", "customer", "created_at"]
+        fields = ["id", "customer", "created_at", "products"]
         read_only_fields = ["id", "created_at"]
 
 
@@ -155,29 +191,6 @@ class CartItemSerializer(serializers.ModelSerializer):
             "product": {"required": True},
             "quantity": {"required": True},
             "id": {"read_only": True},
-        }
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    """
-    serializer for ordritem model
-    """
-
-    class Meta:
-        model = OrderItem
-        fields = [
-            "id",
-            "cart",
-            "order",
-            "product",
-            "quantity",
-        ]
-        read_only_fields = ["id"]
-        extra_kwargs = {
-            "cart": {"required": True},
-            "order": {"required": True},
-            "product": {"required": True},
-            "quantity": {"required": True},
         }
 
 

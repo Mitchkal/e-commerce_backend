@@ -113,6 +113,25 @@ class Product(models.Model):
         return self.name
 
 
+class Cart(models.Model):
+    """
+    Cart model
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    products = models.ManyToManyField(Product, through="CartItem", blank=True)
+    # total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Cart {self.id} - {self.customer.email}"
+
+
 class OrderStatus(models.TextChoices):
     """
     Enum for order status
@@ -136,10 +155,13 @@ class Order(models.Model):
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, related_name="orders"
     )
-    # For multiple cart items
-    products = models.ManyToManyField(
-        Product, through="CartItem", blank=True, related_name="orders"
+    cart = models.ForeignKey(
+        Cart, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
     )
+    # For multiple cart items
+    # products = models.ManyToManyField(
+    #     Product, through="CartItem", blank=True, related_name="orders"
+    # )
 
     # total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     order_date = models.DateTimeField(auto_now_add=True)
@@ -161,30 +183,10 @@ class Order(models.Model):
         Returns the total price of the order by summing price
         * quantity for each related CartItem.
         """
-        return sum(
-            item.quantity * item.product.price for item in self.cartitem_set.all()
-        )
+        return sum(item.quantity * item.product.price for item in self.items.all())
         # return total
         #     for item in self.cartitem_set.all()
         # )
-
-
-class Cart(models.Model):
-    """
-    Cart model
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    products = models.ManyToManyField(Product, through="OrderItem", blank=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"Cart {self.id} - {self.customer.email}"
 
 
 class OrderItem(models.Model):
@@ -192,13 +194,9 @@ class OrderItem(models.Model):
     Model for order items
     """
 
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, related_name="order_items"
-    )
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="order_items"
-    )
+    # cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="items")
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -210,7 +208,7 @@ class CartItem(models.Model):
     Model for cart items
     """
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="cart_items"
@@ -257,6 +255,7 @@ class Payment(models.Model):
     amount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.0, blank=True, null=True
     )
+    reference = models.CharField(max_length=100, unique=True, blank=True, null=True)
     status = models.CharField(max_length=50, default=PaymentStatus.PENDING)
     payment_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, blank=True, null=True)

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
+import time
 import requests
 from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from .serializers import (
@@ -114,7 +115,7 @@ class ProductViewset(viewsets.ModelViewSet):
                 {"message": "Product is out of stock"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, created = Cart.objects.get_or_create(customer=request.user)
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart, product=product, defaults={"quantity": 1}
         )
@@ -173,6 +174,15 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(cart)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        """
+        get current user's cart
+        """
+        cart, created = Cart.objects.get_or_create(customer=request.user)
+        serializer = self.get_serializer(cart)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CartItemViewset(viewsets.ModelViewSet):
     """
@@ -190,7 +200,7 @@ class CartItemViewset(viewsets.ModelViewSet):
         user = self.request.user
         # customer = Customer.objects.get(user=user)
 
-        cart = Cart.objects.filter(customer=user.customer).first()
+        cart = Cart.objects.filter(customer=user).first()
         if cart:
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()
@@ -211,36 +221,60 @@ class OrderViewset(viewsets.ModelViewSet):
         Create an order for authenticated user
         """
         user = request.user
-        cart = Cart.objects.filter(customer__user=user).first()
+
+        cart = Cart.objects.filter(customer=user).first()
+
         if not cart:
             return Response(
                 {"message": "Cart not Found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        if not cart.products.exists():
+        cart_items = cart.cart_items.all()
+        print(f"Cart Items: {cart_items}")
+        if not cart_items.exists():
             return Response(
                 {"message": "Cart is empty, cannot create order"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(customer=cart.customer, products=cart.products.all())
+        order = Order.objects.create(
+            customer=cart.customer,
+            cart=cart,
+            shipping_address=request.data.get("shipping_address", ""),
+            billing_address=request.data.get("billing_address", ""),
+            # products=cart.products.all(),
+            # total_price=sum(item.product.price * item.quantity for item in cart_items),
+        )
+        for cart_item in cart.cart_items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+            )
+        # clear cart
 
-        # Clear cart after order creation
+        cart.cart_items.all().delete()
         cart.products.clear()
+
+        serializer = self.get_serializer(order)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save(customer=cart.customer, products=cart.products.all())
+
+        # # Clear cart after order creation
+        # cart.products.clear()
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
         )
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
-    def initiate_payment(self, request, args, **kwargs):
+    def initiate_payment(self, request, *args, **kwargs):
         """
         Payment processing with Paystack
         """
 
         order = self.get_object()
-        if order.payment.filter(status="success").exists():
+        # if order.status.filter(status="success").exists():
+        if order.status == "success":
             return Response({"message": "Order already paid"}, status=400)
 
         # amount = order.total_amount
@@ -254,29 +288,26 @@ class OrderViewset(viewsets.ModelViewSet):
             "amount": amount * 100,
             "currency": "KES",
             "email": order.customer.email,
-            "reference": f"order_{order.id}",
+            "reference": f"order_{order.id}_{int(time.time())}",
             "channels": ["mobile_money", "bank", "card", "ussd"],
             "metadata": {
-                "order_id": order.id,
-                "customer_id": order.customer.id,
+                "order_id": str(order.id),
+                "customer_id": str(order.customer.id),
                 "customer_name": f"{order.customer.first_name} {order.customer.last_name}",
                 "customer_email": order.customer.email,
-                "order_total": order.total_amount,
-                "cart_id": order.cart.id if order.cart else None,
+                "order_total": float(order.total_price),
+                "cart_id": str(order.cart.id if order.cart else None),
                 "custom_fields": [
                     {
                         "display_name": "Order ID",
-                        "variable_name": order.id,
+                        "variable_name": "order_id",
                         "value": str(order.id),
                     },
                     {
                         "display_name": "Cart Items",
                         "variable_name": "cart_items",
                         "value": ", ".join(
-                            [
-                                str(item.product.name)
-                                for item in order.cart.products.all()
-                            ]
+                            [str(item.name) for item in order.cart.products.all()]
                         ),
                     },
                 ],
@@ -290,9 +321,17 @@ class OrderViewset(viewsets.ModelViewSet):
         # verify_url = "https://api.paystack.co/transaction/verify/"
         try:
             response = requests.post(transaction_url, json=data, headers=headers)
-            response.raise_for_status()
+            # response.raise_for_status()
+            if response.status_code != 200:
+                return Response(
+                    {
+                        "message": "Payment initialization failed",
+                        "paystack_error": response.json(),
+                    },
+                    status=response.status_code,
+                )
             payment_data = response.json()
-            if payment_data.get("status") == "true":
+            if payment_data.get("status") is True:
                 # create payment record
                 payment = Payment.objects.create(
                     order=order,
@@ -304,12 +343,21 @@ class OrderViewset(viewsets.ModelViewSet):
                     {
                         "message": "Payment initiated succesfully",
                         "checkout_url": payment_data["data"]["authorization_url"],
-                        "payment_id": payment.id,
-                        "order_id": order.id,
-                        "order_total": order.total_amount,
+                        "reference": payment_data["data"]["reference"],
+                        "payment_id": str(payment.id),
+                        "order_id": str(order.id),
+                        "order_total": float(order.total_price),
                         "customer_email": order.customer.email,
                     },
                     status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Payment initialization failed",
+                        "error": payment_data.get("message", "unknown error"),
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         except requests.exceptions.RequestException as e:
             return Response(
