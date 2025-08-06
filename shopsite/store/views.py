@@ -17,7 +17,8 @@ from .serializers import (
 
 # from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -32,42 +33,39 @@ from .pagination import ProductPagination, OrderPagination
 User = get_user_model()
 
 
-class CustomerViewset(viewsets.ModelViewSet):
+class CustomerAdminViewset(viewsets.ModelViewSet):
     """
-    Viewset for Customer model
+    Viewset for Admin customer management
     """
 
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
-class RegisterViewset(viewsets.ModelViewSet):
+class SignupViewset(CreateAPIView):
     """
-    Viewset for customer registration
+    viewset for customer signup
     """
 
     serializer_class = RegisterSerializer
     queryset = Customer.objects.all()
+    permission_classes = []
 
-    def get_queryset(self):
+    def perform_create(self, serializer):
         """
-        avoid listing registered customers
+        Handle customer signup
         """
-        if self.request.method == "GET":
-            return Customer.objects.none()
-        return super().get_queryset()
-
-    def create(self, request, *args, **kwargs):
-        """
-        Handles customer registration
-        """
-        serializer = self.get_serializer(data=request.data)
+        serializer.save()
+        # validate serializer
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+
+        user = serializer.instance
+        user.set_password(serializer.validated_data["password"])
+        user.save()
         return Response(
             {
-                "message": "User created Succesfully",
+                "message": "User created",
                 "user": {
                     "id": user.id,
                     "email": user.email,
@@ -77,6 +75,58 @@ class RegisterViewset(viewsets.ModelViewSet):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class CustomerProfileViewset(RetrieveUpdateAPIView):
+    """
+    allows authenticated users to view and update their profile
+    """
+
+    serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """
+        return authenticated user
+        """
+        return self.request.user
+
+
+# class RegisterViewset(viewsets.ModelViewSet):
+#     """
+#     Viewset for customer registration
+#     """
+
+#     serializer_class = RegisterSerializer
+#     queryset = Customer.objects.all()
+
+#     def get_queryset(self):
+#         """
+#         avoid listing registered customers
+#         """
+#         if self.request.method == "GET":
+#             return Customer.objects.none()
+#         return super().get_queryset()
+
+#     def create(self, request, *args, **kwargs):
+#         """
+#         Handles customer registration
+#         """
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         return Response(
+#             {
+#                 "message": "User created Succesfully",
+#                 "user": {
+#                     "id": user.id,
+#                     "email": user.email,
+#                     "first_name": user.first_name,
+#                     "last_name": user.last_name,
+#                 },
+#             },
+#             status=status.HTTP_201_CREATED,
+#         )
 
 
 # Create your views here.
