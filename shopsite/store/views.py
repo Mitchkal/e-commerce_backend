@@ -28,6 +28,10 @@ from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
 from .permissions import IsStaffOrReadOnly
 from .pagination import ProductPagination, OrderPagination
+from django.core.cache import cache
+
+from django.utils.decorators import method_decorator
+from django.utils.http import urlencode
 
 
 User = get_user_model()
@@ -130,6 +134,8 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
 
 
 # Create your views here.
+
+
 class ProductViewset(viewsets.ModelViewSet):
     """
     Viewset for Product Model
@@ -146,13 +152,65 @@ class ProductViewset(viewsets.ModelViewSet):
         """
         queryset for product model
         """
-        return Product.objects.order_by("-price").annotate(
-            annotated_is_in_stock=Case(
-                When(stock__gt=0, then=Value(True)),
-                default=Value(False),
-                output_field=BooleanField(),
+
+        return (
+            Product.objects.all()
+            .order_by("-price")
+            .annotate(
+                annotated_is_in_stock=Case(
+                    When(stock__gt=0, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
             )
         )
+
+        # key = "product_list"
+        # cached_products = cache.get(key)
+        # if cached_products is None:
+        #     cached_products = (
+        #         Product.objects.all()
+        #         .order_by("-price")
+        #         .annotate(
+        #             annotated_is_in_stock=Case(
+        #                 When(stock__gt=0, then=Value(True)),
+        #                 default=Value(False),
+        #                 output_field=BooleanField(),
+        #             )
+        #         )
+        #     )
+        #     # cache queryset for 15 minutes
+        #     cache.set(key, cached_products, timeout=60 * 15)
+        # return cached_products
+
+    def list(self, request, *args, **kwargs):
+        """
+        ensures paginated and serialized responses
+        are cached
+        """
+        query_string = urlencode(request.query_params)
+        cache_key = f"product_list_response_{query_string or 'all'}"
+
+        cached_response = cache.get(cache_key)
+        if cached_response is not None:
+            return Response(cached_response)
+        response = super().list(request, *args, **kwargs)
+
+        # cache for 15 minutes
+        cache.set(cache_key, response.data, timeout=60 * 15)
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        pk = self.kwargs.get("pk")
+        cache_key = f"product_detail_response_{pk}"
+
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data)
+
+        response = super().retrieve(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60 * 15)
+        return response
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def add_to_cart(self, request, pk=None):
