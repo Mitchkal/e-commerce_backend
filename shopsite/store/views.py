@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
+import logging
 import time
 import requests
 from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
@@ -18,6 +19,7 @@ from .serializers import (
 # from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -32,8 +34,10 @@ from django.core.cache import cache
 
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
+from django.db import transaction
 
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
@@ -167,7 +171,9 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
 
 class ProductViewset(viewsets.ModelViewSet):
     """
-    Viewset for Product Model
+    Viewset for Product Model CRUD operations
+    supports filtering, pagination, and caching
+    of list and detail responses
     """
 
     # queryset = Product.objects.all()
@@ -175,11 +181,13 @@ class ProductViewset(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
     permission_classes = [IsStaffOrReadOnly]
-    paginaton_class = ProductPagination
+    pagination_class = ProductPagination
 
     def get_queryset(self):
         """
-        queryset for product model
+        Returns queryset for product model ordered by price in
+        descending order with annotated bollean field for staock availability
+        Cached for 15 minutes to enhance performance
         """
 
         return (
@@ -214,31 +222,49 @@ class ProductViewset(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        ensures paginated and serialized responses
-        are cached
+        Returns paginated product list with caching
+        based on query parameters. Cache stored for 15 minutes
         """
-        query_string = urlencode(request.query_params)
+        query_string = urlencode(request.query_params.items())
         cache_key = f"product_list_response_{query_string or 'all'}"
 
-        cached_response = cache.get(cache_key)
-        if cached_response is not None:
-            return Response(cached_response)
+        try:
+            cached_response = cache.get(cache_key)
+            if cached_response is not None:
+                logger.debug(f"Cache hit for key: {cache_key}")
+                return Response(cached_response)
+        except Exception as e:
+            logger.error(f"Cache retrieval failed for key {cache_key}: {str(e)}")
+
         response = super().list(request, *args, **kwargs)
 
         # cache for 15 minutes
-        cache.set(cache_key, response.data, timeout=60 * 15)
+        try:
+            cache.set(cache_key, response.data, timeout=60 * 15)
+            logger.debug(f"Cache set for key: {cache_key}")
+        except Exception as e:
+            logger.error(f"Cache set failed for key {cache_key}: {str(e)}")
         return response
 
     def retrieve(self, request, *args, **kwargs):
         pk = self.kwargs.get("pk")
         cache_key = f"product_detail_response_{pk}"
+        try:
 
-        cached_data = cache.get(cache_key)
-        if cached_data is not None:
-            return Response(cached_data)
+            cached_data = cache.get(cache_key)
+            if cached_data is not None:
+                logger.debug(f" Cache hit for key: {cache_key}")
+                return Response(cached_data)
+        except Exception as e:
+            logger.error(f"Cache retrieval failed for key {cache_key}: {str(e)}")
 
         response = super().retrieve(request, *args, **kwargs)
-        cache.set(cache_key, response.data, timeout=60 * 15)
+
+        try:
+            cache.set(cache_key, response.data, timeout=60 * 15)
+            logger.debug(f"Cached response for key: {cache_key}")
+        except Exception as e:
+            logger.error(f"Cache set failed for key {cache_key}: {str(e)}")
         return response
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
@@ -316,7 +342,7 @@ class CartViewSet(viewsets.ModelViewSet):
         """
         get current user's cart
         """
-        cart, created = Cart.objects.get_or_create(customer=request.user)
+        cart = Cart.objects.get(customer=request.user)
         serializer = self.get_serializer(cart)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -343,22 +369,19 @@ class CartItemViewset(viewsets.ModelViewSet):
         return CartItem.objects.none()
 
 
-class OrderViewset(viewsets.ModelViewSet):
+class CheckoutView(APIView):
     """
-    Viewset for order model
+    Viewset for checkout operations
     """
 
-    queryset = Order.objects.all().order_by("-order_date")
-    serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = OrderPagination
 
-    def create(self, request, *args, **kwargs):
+    @transaction.atomic
+    def post(self, request):
         """
-        Create an order for authenticated user
+        Handles checkout for an authenticated user
         """
         user = request.user
-
         cart = Cart.objects.filter(customer=user).first()
 
         if not cart:
@@ -381,18 +404,19 @@ class OrderViewset(viewsets.ModelViewSet):
             # products=cart.products.all(),
             # total_price=sum(item.product.price * item.quantity for item in cart_items),
         )
-        for cart_item in cart.cart_items.all():
+        for item in cart_items.all():
             OrderItem.objects.create(
                 order=order,
-                product=cart_item.product,
-                quantity=cart_item.quantity,
+                product=item.product,
+                quantity=item.quantity,
             )
         # clear cart
 
         cart.cart_items.all().delete()
         cart.products.clear()
+        serializer = OrderSerializer(order)
 
-        serializer = self.get_serializer(order)
+        # serializer = self.get_serializer(order)
         # serializer.is_valid(raise_exception=True)
         # serializer.save(customer=cart.customer, products=cart.products.all())
 
@@ -403,16 +427,114 @@ class OrderViewset(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
-    def initiate_payment(self, request, *args, **kwargs):
+
+class OrderViewset(viewsets.ModelViewSet):
+    """
+    Viewset for order model
+    """
+
+    queryset = Order.objects.all().order_by("-order_date")
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = OrderPagination
+
+    def get_queryset(self):
+        """
+        Return orders for authenticated user
+        """
+        user = self.request.user
+        return Order.objects.filter(customer=user).order_by("-order_date")
+
+    # def create(self, request, *args, **kwargs):
+    #     """
+    #     Create an order for authenticated user
+    #     """
+    #     user = request.user
+
+    #     cart = Cart.objects.filter(customer=user).first()
+
+    #     if not cart:
+    #         return Response(
+    #             {"message": "Cart not Found"},
+    #             status=status.HTTP_404_NOT_FOUND,
+    #         )
+    #     cart_items = cart.cart_items.all()
+    #     print(f"Cart Items: {cart_items}")
+    #     if not cart_items.exists():
+    #         return Response(
+    #             {"message": "Cart is empty, cannot create order"},
+    #             status=status.HTTP_400_BAD_REQUEST,
+    #         )
+    #     total = sum(item.product.price * item.quantity for item in cart_items)
+
+    #     order = Order.objects.create(
+    #         customer=cart.customer,
+    #         cart=cart,
+    #         shipping_address=request.data.get("shipping_address", ""),
+    #         billing_address=request.data.get("billing_address", ""),
+    #         total_price=total,
+    #         # products=cart.products.all(),
+    #         # total_price=sum(item.product.price * item.quantity for item in cart_items),
+    #     )
+    #     for cart_item in cart.cart_items.all():
+    #         OrderItem.objects.create(
+    #             order=order,
+    #             product=cart_item.product,
+    #             quantity=cart_item.quantity,
+    #             price=cart_item.product.price,
+    #         )
+    #     # clear cart
+    #     cart.cart_items.all().delete()
+    #     cart.products.clear()
+
+    #     serializer = self.get_serializer(order)
+    #     # serializer.is_valid(raise_exception=True)
+    #     # serializer.save(customer=cart.customer, products=cart.products.all())
+
+    #     # # Clear cart after order creation
+    #     # cart.products.clear()
+    #     return Response(
+    #         {
+    #             "message": "Order created",
+    #             "order": serializer.data,
+    #             "order_id": str(order.id),
+    #             "total": float(order.total_amount),
+    #             "payment_url": f"/api/pay/{order.id}/"
+    #         },
+    #         status=status.HTTP_201_CREATED,
+    #     )
+
+
+class PayView(APIView):
+    """
+    View for payment processing
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, order_id):
         """
         Payment processing with Paystack
         """
-
-        order = self.get_object()
+        user = request.user
+        try:
+            order = Order.objects.get(id=order_id, customer=user)
+        except Order.DoesNotExist:
+            return Response(
+                {"message": "Order not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         # if order.status.filter(status="success").exists():
         if order.status == "success":
             return Response({"message": "Order already paid"}, status=400)
+        if Payment.objects.filter(
+            order=order, status__in=["pending", "success"]
+        ).exists():
+            return Response(
+                {
+                    "message": " Payment is already in progress or completed for this order."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # amount = order.total_amount
         amount = 3  # fixed amount for testing
@@ -445,6 +567,8 @@ class OrderViewset(viewsets.ModelViewSet):
                         "variable_name": "cart_items",
                         "value": ", ".join(
                             [str(item.name) for item in order.cart.products.all()]
+                            if order.cart
+                            else "N/A"
                         ),
                     },
                 ],
@@ -497,11 +621,13 @@ class OrderViewset(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         except requests.exceptions.RequestException as e:
+            logger.error(f"Payment initialization failed: {str(e)}")
             return Response(
                 {"message": "Payment initialization failed", "error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:
+            logger.error(f"An error occurred during payment processing: {str(e)}")
             return Response(
                 {"message": "An error occured", "error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -514,14 +640,14 @@ class OrderViewset(viewsets.ModelViewSet):
         #     status=status.HTTP_501_NOT_IMPLEMENTED,
         # )
 
-        def cancel_order(self, request, args, **kwargs):
-            """
-            Placeholder for order cancellation
-            """
-            return Response(
-                {"message": "Order cancellation not implemented"},
-                status=status.HTTP_501_NOT_IMPLEMENTED,
-            )
+        # def cancel_order(self, request, args, **kwargs):
+        #     """
+        #     Placeholder for order cancellation
+        #     """
+        #     return Response(
+        #         {"message": "Order cancellation not implemented"},
+        #         status=status.HTTP_501_NOT_IMPLEMENTED,
+        #     )
 
 
 class OrderItemViewset(viewsets.ModelViewSet):

@@ -12,6 +12,8 @@ from .views import (
     CartViewSet,
     CartItemViewset,
     ReviewViewset,
+    CheckoutView,
+    PayView,
 )
 from .webhook import paystack_webhook
 
@@ -35,6 +37,8 @@ urlpatterns = [
         CustomerProfileViewset.as_view(),
         name="customer-profile",
     ),
+    path("checkout/", CheckoutView.as_view(), name="checkout"),
+    path("pay/", PayView.as_view(), name="pay"),
     # path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     # path(
     #     "register/", RegisterViewset.as_view({"post", "create"}), name="register-create"

@@ -119,7 +119,9 @@ class Cart(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, unique=True)
+    customer = models.OneToOneField(
+        Customer, on_delete=models.CASCADE, related_name="cart"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     products = models.ManyToManyField(Product, through="CartItem", blank=True)
