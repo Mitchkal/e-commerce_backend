@@ -95,6 +95,35 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
         """
         return self.request.user
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        retrieve profile for authenticated user
+        """
+        user = request.user
+        cache_key = f"customer_profile_{user.id}"
+
+        cached_data = cache.get(cache_key)
+
+        if cached_data is not None:
+            return Response(cached_data)
+
+        serializer = self.get_serializer(user)
+        cache.set(cache_key, serializer.data, timeout=60 * 16)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        """
+        profile update for authenticated user
+        """
+        user = request.user
+        response = super().update(request, *args, **kwargs)
+
+        # Invalidates cache after update
+        cache_key = f"customer_profile_{user.id}"
+        cache.delete(cache_key)
+
+        return response
+
 
 # class RegisterViewset(viewsets.ModelViewSet):
 #     """
@@ -529,6 +558,21 @@ class ReviewViewset(viewsets.ModelViewSet):
         if product_id:
             return Review.objects.filter(product_id=product_id)
         return Review.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        """
+        override to cache product reviews
+        """
+        product_id = self.kwargs.get("product_id")
+        cache_key = f"product_reviews_{product_id}"
+
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return Response(cached_data)
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60 * 15)
+        return response
 
 
 class PaymentViewset(viewsets.ModelViewSet):
