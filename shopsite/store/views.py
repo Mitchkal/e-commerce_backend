@@ -3,7 +3,17 @@ from django.conf import settings
 import logging
 import time
 import requests
-from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
+from .models import (
+    Customer,
+    Product,
+    Order,
+    Cart,
+    CartItem,
+    Review,
+    Payment,
+    OrderItem,
+    OrderStatus,
+)
 from .serializers import (
     CustomerSerializer,
     RegisterSerializer,
@@ -30,6 +40,7 @@ from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
 from .permissions import IsStaffOrReadOnly
 from .pagination import ProductPagination, OrderPagination
+from .utility import initiate_payment
 from django.core.cache import cache
 
 from django.utils.decorators import method_decorator
@@ -440,69 +451,150 @@ class OrderViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Return orders for authenticated user
+        Return a users orders only and
+        all orders if user is staff
         """
-        user = self.request.user
-        return Order.objects.filter(customer=user).order_by("-order_date")
+        if self.request.user.is_staff:
+            return Order.objects.all().order_by("-order_date")
 
-    # def create(self, request, *args, **kwargs):
+        return Order.objects.filter(customer=self.request.user).order_by("-order_date")
+
+    def create(self, request, *args, **kwargs):
+        """
+        Disable order creation throgh this viewset
+        """
+        return Response(
+            {"detail": "Order creation via this endpoint is not allowed."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def cancel(self, request, *args, **kwargs):
+        """
+        Allow user to cancel an order
+        """
+        order = self.get_object()
+        if order.customer != request.user:
+            return Response(
+                {"detail": "Not your order"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if order.status != OrderStatus.PENDING:
+            return Response(
+                {"detail": "Cannot cancel order that is not pending"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        order.status = OrderStatus.CANCELLED
+        order.save()
+        return Response(
+            {"detail": "Order Cancelled Succesfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminUser])
+    def mark_as_completed(self, request, *args, **kwargs):
+        """
+        admin only endpoint for marking order as completed
+        """
+        order = self.get_object()
+        if order.status != OrderStatus.SHIPPED:
+            return Response(
+                {"detail": "Cannot mark unshipped order as completed"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        order.status = OrderStatus.COMPLETED
+        order.save()
+        return Response(
+            {"detail": "Order marked as completed succesfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminUser])
+    def mark_as_shipped(self, request, *args, **kwargs):
+        """
+        admin only endpoint to mark order as shipped
+        """
+        order = self.get_object()
+
+        if order.status != OrderStatus.PROCESSING:
+            return Response(
+                {"detail": "Cannot ,mark unprocessed order as shipped"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        order.status = OrderStatus.SHIPPED
+        order.save()
+        return Response(
+            {"detail": "Order marked as shipped succesfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    # @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    # def retry_payment(self, request, *args, **kwargs):
     #     """
-    #     Create an order for authenticated user
+    #     Allow user to retry failed payment for an order
     #     """
-    #     user = request.user
 
-    #     cart = Cart.objects.filter(customer=user).first()
 
-    #     if not cart:
-    #         return Response(
-    #             {"message": "Cart not Found"},
-    #             status=status.HTTP_404_NOT_FOUND,
-    #         )
-    #     cart_items = cart.cart_items.all()
-    #     print(f"Cart Items: {cart_items}")
-    #     if not cart_items.exists():
-    #         return Response(
-    #             {"message": "Cart is empty, cannot create order"},
-    #             status=status.HTTP_400_BAD_REQUEST,
-    #         )
-    #     total = sum(item.product.price * item.quantity for item in cart_items)
+#
 
-    #     order = Order.objects.create(
-    #         customer=cart.customer,
-    #         cart=cart,
-    #         shipping_address=request.data.get("shipping_address", ""),
-    #         billing_address=request.data.get("billing_address", ""),
-    #         total_price=total,
-    #         # products=cart.products.all(),
-    #         # total_price=sum(item.product.price * item.quantity for item in cart_items),
-    #     )
-    #     for cart_item in cart.cart_items.all():
-    #         OrderItem.objects.create(
-    #             order=order,
-    #             product=cart_item.product,
-    #             quantity=cart_item.quantity,
-    #             price=cart_item.product.price,
-    #         )
-    #     # clear cart
-    #     cart.cart_items.all().delete()
-    #     cart.products.clear()
+# def create(self, request, *args, **kwargs):
+#     """
+#     Create an order for authenticated user
+#     """
+#     user = request.user
 
-    #     serializer = self.get_serializer(order)
-    #     # serializer.is_valid(raise_exception=True)
-    #     # serializer.save(customer=cart.customer, products=cart.products.all())
+#     cart = Cart.objects.filter(customer=user).first()
 
-    #     # # Clear cart after order creation
-    #     # cart.products.clear()
-    #     return Response(
-    #         {
-    #             "message": "Order created",
-    #             "order": serializer.data,
-    #             "order_id": str(order.id),
-    #             "total": float(order.total_amount),
-    #             "payment_url": f"/api/pay/{order.id}/"
-    #         },
-    #         status=status.HTTP_201_CREATED,
-    #     )
+#     if not cart:
+#         return Response(
+#             {"message": "Cart not Found"},
+#             status=status.HTTP_404_NOT_FOUND,
+#         )
+#     cart_items = cart.cart_items.all()
+#     print(f"Cart Items: {cart_items}")
+#     if not cart_items.exists():
+#         return Response(
+#             {"message": "Cart is empty, cannot create order"},
+#             status=status.HTTP_400_BAD_REQUEST,
+#         )
+#     total = sum(item.product.price * item.quantity for item in cart_items)
+
+#     order = Order.objects.create(
+#         customer=cart.customer,
+#         cart=cart,
+#         shipping_address=request.data.get("shipping_address", ""),
+#         billing_address=request.data.get("billing_address", ""),
+#         total_price=total,
+#         # products=cart.products.all(),
+#         # total_price=sum(item.product.price * item.quantity for item in cart_items),
+#     )
+#     for cart_item in cart.cart_items.all():
+#         OrderItem.objects.create(
+#             order=order,
+#             product=cart_item.product,
+#             quantity=cart_item.quantity,
+#             price=cart_item.product.price,
+#         )
+#     # clear cart
+#     cart.cart_items.all().delete()
+#     cart.products.clear()
+
+#     serializer = self.get_serializer(order)
+#     # serializer.is_valid(raise_exception=True)
+#     # serializer.save(customer=cart.customer, products=cart.products.all())
+
+#     # # Clear cart after order creation
+#     # cart.products.clear()
+#     return Response(
+#         {
+#             "message": "Order created",
+#             "order": serializer.data,
+#             "order_id": str(order.id),
+#             "total": float(order.total_amount),
+#             "payment_url": f"/api/pay/{order.id}/"
+#         },
+#         status=status.HTTP_201_CREATED,
+#     )
 
 
 class PayView(APIView):
@@ -523,131 +615,9 @@ class PayView(APIView):
             return Response(
                 {"message": "Order not found"}, status=status.HTTP_404_NOT_FOUND
             )
-        # if order.status.filter(status="success").exists():
-        if order.status == "success":
-            return Response({"message": "Order already paid"}, status=400)
-        if Payment.objects.filter(
-            order=order, status__in=["pending", "success"]
-        ).exists():
-            return Response(
-                {
-                    "message": " Payment is already in progress or completed for this order."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # amount = order.total_amount
-        amount = 3  # fixed amount for testing
-        if not amount:
-            return Response(
-                {"message": "Order total amount not set"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        data = {
-            "amount": amount * 100,
-            "currency": "KES",
-            "email": order.customer.email,
-            "reference": f"order_{order.id}_{int(time.time())}",
-            "channels": ["mobile_money", "bank", "card", "ussd"],
-            "metadata": {
-                "order_id": str(order.id),
-                "customer_id": str(order.customer.id),
-                "customer_name": f"{order.customer.first_name} {order.customer.last_name}",
-                "customer_email": order.customer.email,
-                "order_total": float(order.total_price),
-                "cart_id": str(order.cart.id if order.cart else None),
-                "custom_fields": [
-                    {
-                        "display_name": "Order ID",
-                        "variable_name": "order_id",
-                        "value": str(order.id),
-                    },
-                    {
-                        "display_name": "Cart Items",
-                        "variable_name": "cart_items",
-                        "value": ", ".join(
-                            [str(item.name) for item in order.cart.products.all()]
-                            if order.cart
-                            else "N/A"
-                        ),
-                    },
-                ],
-            },
-        }
-        headers = {
-            "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-            "Content-Type": "application/json",
-        }
-        transaction_url = "https://api.paystack.co/transaction/initialize"
-        # verify_url = "https://api.paystack.co/transaction/verify/"
-        try:
-            response = requests.post(transaction_url, json=data, headers=headers)
-            # response.raise_for_status()
-            if response.status_code != 200:
-                return Response(
-                    {
-                        "message": "Payment initialization failed",
-                        "paystack_error": response.json(),
-                    },
-                    status=response.status_code,
-                )
-            payment_data = response.json()
-            if payment_data.get("status") is True:
-                # create payment record
-                payment = Payment.objects.create(
-                    order=order,
-                    amount=amount,
-                    reference=payment_data["data"]["reference"],
-                    status="pending",
-                )
-                return Response(
-                    {
-                        "message": "Payment initiated succesfully",
-                        "checkout_url": payment_data["data"]["authorization_url"],
-                        "reference": payment_data["data"]["reference"],
-                        "payment_id": str(payment.id),
-                        "order_id": str(order.id),
-                        "order_total": float(order.total_price),
-                        "customer_email": order.customer.email,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {
-                        "message": "Payment initialization failed",
-                        "error": payment_data.get("message", "unknown error"),
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Payment initialization failed: {str(e)}")
-            return Response(
-                {"message": "Payment initialization failed", "error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except Exception as e:
-            logger.error(f"An error occurred during payment processing: {str(e)}")
-            return Response(
-                {"message": "An error occured", "error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-        # if order.status
-
-        # return Response(
-        #     {"message": "Payment processing not implemented"},
-        #     status=status.HTTP_501_NOT_IMPLEMENTED,
-        # )
-
-        # def cancel_order(self, request, args, **kwargs):
-        #     """
-        #     Placeholder for order cancellation
-        #     """
-        #     return Response(
-        #         {"message": "Order cancellation not implemented"},
-        #         status=status.HTTP_501_NOT_IMPLEMENTED,
-        #     )
+        amount_override = 3  # fixed amount for testing
+        status_code, result = initiate_payment(order=order, amount=amount_override)
+        return Response(result, status=status_code)
 
 
 class OrderItemViewset(viewsets.ModelViewSet):
@@ -721,3 +691,9 @@ class PaymentViewset(viewsets.ModelViewSet):
             serializer.data,
             status=status.HTTP_201_CREATED,
         )
+
+    # @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
+    # def retry(self, request, pk=None):
+    #     """
+    #     Retry payment for an order if failed
+    #     """
