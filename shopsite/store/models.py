@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
 )
 from django.utils.translation import gettext_lazy as _
 import uuid
+from cloudinary.models import CloudinaryField
 
 
 class CustomerManager(BaseUserManager):
@@ -84,7 +85,8 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to=product_directory_path, blank=True, null=True)
+    image = models.ImageField(upload_to="photos/products/", blank=True, null=True)
+    # image = CloudinaryField("image", blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True)
     tags = models.CharField(max_length=100, blank=True, null=True)
     rating = models.DecimalField(
