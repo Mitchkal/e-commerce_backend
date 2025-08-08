@@ -88,6 +88,10 @@ A robust Django backend API for an e-commerce platform, supporting customer and 
    ```bash
    celery -A <project_name> worker -l info
    ```
+   Build images with
+   docker compose build
+   start service with
+   docker-compose up -d
 
 ---
 
