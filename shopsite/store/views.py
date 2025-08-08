@@ -640,14 +640,14 @@ class PayView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def post(self, request, order_id=None):
         """
         Payment processing with Paystack
         """
         user = request.user
-        order_id = request.data.get("order_id")
+        # order_id = request.data.get("order_id")
         try:
-            order = Order.objects.get(id=order_id, customer=user)
+            order = Order.objects.get(customer=user, status=OrderStatus.PENDING)
         except Order.DoesNotExist:
             return Response(
                 {"message": "Order not found"}, status=status.HTTP_404_NOT_FOUND

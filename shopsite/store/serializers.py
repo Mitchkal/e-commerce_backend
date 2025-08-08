@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError
 
 
 user = get_user_model()
@@ -64,6 +67,21 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data.get("password", ""),
         )
         return user
+
+    def validate_password(self, value):
+        """
+        Validate password strength
+        """
+        user = Customer(
+            email=self.initial_data.get("email"),
+            first_name=self.initial_data.get("first_name"),
+            last_name=self.initial_data.get("last_name"),
+        )
+        try:
+            validate_password(password=value, user=user)
+        except DjangoValidationError as e:
+            raise ValidationError(e.messages)
+        return value
 
     def get_token(self, obj: Customer) -> dict:
         """
