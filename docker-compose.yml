@@ -1,4 +1,21 @@
 services:
+
+  web:
+    build: .
+    command: ["gunicorn", "--bind", ":8000", "shopsite.wsgi.application"]
+    volumes:
+      - .:/application
+      - media_volume:/app/media/
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    networks:
+      - shopsite-network
+
   db:
     image: postgres:latest
     restart: always
@@ -10,6 +27,20 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/db_data
+    networks:
+      - shopsite-network
+  celery-worker:
+    build:
+    command: ["celery", "-A", "shopsite", "worker", "--loglevel=info"]
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    networks:
+      - shopsite-network
 
   redis:
     image: redis:latest
@@ -20,6 +51,12 @@ services:
       - redis_data:/db_data
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+       - shopsite-network
+  
+  daphne: .
+    build: .
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "shopsite.asgi:application"]
 volumes:
   db_data:
   redis_data:
