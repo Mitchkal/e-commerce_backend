@@ -157,6 +157,19 @@ class OrderSerializer(serializers.ModelSerializer):
             #     "total_amount": {"required": True},
         }
 
+    def validate(self, attrs):
+        """
+        Validate to ensure user only has one pending order at a time
+        """
+        user = self.context["request"].user
+        if Order.objects.filter(
+            customer=user, status=Order.OrderStatus.PENDING
+        ).exists():
+            raise serializers.ValidationError(
+                "You already have a pending order, Please complete it first."
+            )
+        return attrs
+
     def get_total_price(self, obj) -> float:
         """
         Calculate total price of order
@@ -223,11 +236,17 @@ class PaymentSerializer(serializers.ModelSerializer):
             "order",
             "amount",
             "status",
-            "payment_status",
             "payment_date",
             "payment_method",
         ]
-        read_only_fields = ["payment_uuid", "payment_date"]
+        read_only_fields = [
+            "payment_uuid",
+            "payment_date",
+            "order",
+            "status",
+            "payment_method",
+            "amount",
+        ]
         extra_kwargs = {
             "order": {"required": True},
             "amount": {"required": True},

@@ -43,14 +43,28 @@ from .pagination import ProductPagination, OrderPagination
 from .utility import initiate_payment
 from django.core.cache import cache
 from .emails.tasks import send_email_task
+from django.shortcuts import get_object_or_404
 
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
 from django.db import transaction
+from rest_framework.authentication import SessionAuthentication
 
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    temporariliy exexempt csrf in dev
+    """
+
+    def enforce_csrf(self, request):
+        """
+        Override to disable csrf check
+        """
+        return
 
 
 class CustomerAdminViewset(viewsets.ModelViewSet):
@@ -80,7 +94,7 @@ class SignupViewset(CreateAPIView):
         # validate serializer
         # serializer.is_valid(raise_exception=True)
 
-        user = customer.user
+        user = customer
 
         try:
             send_email_task.delay(
@@ -125,6 +139,7 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
         retrieve profile for authenticated user
         """
         user = request.user
+        print(f"user is {user}")
         cache_key = f"customer_profile_{user.id}"
 
         cached_data = cache.get(cache_key)
@@ -336,7 +351,7 @@ class ProductViewset(viewsets.ModelViewSet):
 
 class CartViewSet(viewsets.ModelViewSet):
     """
-    Viewset for the cart model
+    Viewset for the cart model, restricted to the current user
     """
 
     queryset = Cart.objects.none()
@@ -350,20 +365,20 @@ class CartViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Cart.objects.filter(customer=user)
 
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Retrieve cart for authenticated user
-        """
-        cart = self.get_object()
-        serializer = self.get_serializer(cart)
-        return Response(serializer.data)
+    # def retrieve(self, request, *args, **kwargs):
+    #     """
+    #     Retrieve cart for authenticated user
+    #     """
+    #     cart = self.get_object()
+    #     serializer = self.get_serializer(cart)
+    #     return Response(serializer.data)
 
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
         """
         get current user's cart
         """
-        cart = Cart.objects.get(customer=request.user)
+        cart = get_object_or_404(Cart, customer=request.user)
         serializer = self.get_serializer(cart)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -415,6 +430,17 @@ class CheckoutView(APIView):
         if not cart_items.exists():
             return Response(
                 {"message": "Cart is empty, cannot create order"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        existing_pending_order = Order.objects.filter(
+            customer=user, status=OrderStatus.PENDING
+        ).first()
+
+        if existing_pending_order:
+            return Response(
+                {
+                    "message": "You already have a pending order please complete it first."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
         order = Order.objects.create(
@@ -692,7 +718,7 @@ class PaymentViewset(viewsets.ModelViewSet):
     """
 
     queryset = Payment.objects.all()
-    serializer = PaymentSerializer
+    serializer_class = PaymentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
