@@ -16,10 +16,12 @@ def initiate_payment(order, amount_override=None):
 
     """
     # if order.status.filter(status="success").exists():
-    if order.status == OrderStatus.SUCCESS:
+    if order.status == OrderStatus.CREATED:
         return 400, {"message": "Order already paid"}
 
-    if Payment.objects.filter(order=order, status__in=["pending", "success"]).exists():
+    if Payment.objects.filter(
+        order=order, status__in=["completed", "processing", "shipped"]
+    ).exists():
         return 400, {
             "message": " Payment is already in progress or completed for this order."
         }

@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.conf import settings
 from .models import Payment, PaymentStatus, OrderStatus
+from .emails.tasks import send_email_task
 
 
 @csrf_exempt
@@ -43,6 +44,24 @@ def paystack_webhook(request):
                                 if payment.order:
                                     payment.order.status = OrderStatus.CREATED
                                     payment.order.save()
+                                    try:
+                                        # send email notfication
+                                        send_email_task(
+                                            subject="Payment Succesful",
+                                            template_name="emails/payment_success.html",
+                                            context={
+                                                "order": payment.order,
+                                                "amount": payment.amount,
+                                            },
+                                            to_email=payment.order.customer.email,
+                                        )
+                                    except Exception as e:
+                                        return JsonResponse(
+                                            {
+                                                "error": f"Failed to send email notification: {str(e)}"
+                                            },
+                                            status=500,
+                                        )
                         except Payment.DoesNotExist:
                             return JsonResponse(
                                 {"error": "Payment not found"}, status=404

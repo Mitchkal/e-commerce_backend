@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #28a745;
+        }
+
+        .order-details {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Successful</h1>
+        <p>Dear {{ order.customer.first_name }},</p>
+        <p>We have successfully received your payment.</p>
+        <div class="order-details">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Amount Paid:</strong> ${{ amount }}</p>
+        </div>
+        <p>Thank you for shopping with us! Your order will be processed shortly.</p>
+        <div class="footer">
+            &copy; {{ now|date:"Y" }} Your Store Name. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

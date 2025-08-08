@@ -42,6 +42,7 @@ from .permissions import IsStaffOrReadOnly
 from .pagination import ProductPagination, OrderPagination
 from .utility import initiate_payment
 from django.core.cache import cache
+from .emails.tasks import send_email_task
 
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
@@ -75,13 +76,22 @@ class SignupViewset(CreateAPIView):
         """
         Handle customer signup
         """
-        serializer.save()
+        customer = serializer.save()
         # validate serializer
-        serializer.is_valid(raise_exception=True)
+        # serializer.is_valid(raise_exception=True)
 
-        user = serializer.instance
-        user.set_password(serializer.validated_data["password"])
-        user.save()
+        user = customer.user
+
+        try:
+            send_email_task.delay(
+                subject="Welcome to our store!",
+                template_name="emails/welcome.html",
+                context={"user": user.first_name},
+                to_email=user.email,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send welcome email: {str(e)}")
+
         return Response(
             {
                 "message": "User created",
@@ -604,11 +614,12 @@ class PayView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, order_id):
+    def post(self, request):
         """
         Payment processing with Paystack
         """
         user = request.user
+        order_id = request.data.get("order_id")
         try:
             order = Order.objects.get(id=order_id, customer=user)
         except Order.DoesNotExist:
@@ -616,7 +627,9 @@ class PayView(APIView):
                 {"message": "Order not found"}, status=status.HTTP_404_NOT_FOUND
             )
         amount_override = 3  # fixed amount for testing
-        status_code, result = initiate_payment(order=order, amount=amount_override)
+        status_code, result = initiate_payment(
+            order=order, amount_override=amount_override
+        )
         return Response(result, status=status_code)
 
 
@@ -625,9 +638,11 @@ class OrderItemViewset(viewsets.ModelViewSet):
     Viewset for orderItem model
     """
 
-    queyset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return OrderItem.objects.all().order_by("-id")
 
 
 class ReviewViewset(viewsets.ModelViewSet):
@@ -680,17 +695,62 @@ class PaymentViewset(viewsets.ModelViewSet):
     serializer = PaymentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        returns payments
+        """
+        user = self.request.user
+        if user.is_staff:
+            return Payment.objects.all()
+        return Payment.objects.filter(customer=user.customer)
+
     def create(self, request, *args, **kwargs):
         """
-        Create payment for an order
+        Disable payment creation through this viewset
         """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(customer=request.user.customer)
         return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED,
+            {"detail": "Payment creation via this endpoint is not allowed."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )
+
+    def update(self, request, *args, **kwargs):
+        """
+        Disable payment updates through this endpoint
+        """
+        return Response(
+            {"detail": "Payment updates via this endpoint disallowed"},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Disable payment partial updates through this endpoint
+        """
+        return Response(
+            {"detail": "Payment partial updates via this endpoint disallowed"},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Disable payment deletion through this endpoint
+        """
+        return Response(
+            {"detail": "Payment deletion via this endpoint disallowed"},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    # def create(self, request, *args, **kwargs):
+    #     """
+    #     Create payment for an order
+    #     """
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save(customer=request.user.customer)
+    #     return Response(
+    #         serializer.data,
+    #         status=status.HTTP_201_CREATED,
+    #     )
 
     # @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
     # def retry(self, request, pk=None):
