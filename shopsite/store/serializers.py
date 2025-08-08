@@ -38,7 +38,16 @@ class RegisterSerializer(serializers.ModelSerializer):
     """
 
     password = serializers.CharField(
-        write_only=True, min_length=6, style={"input_type": "password"}
+        write_only=True,
+        min_length=6,
+        style={"input_type": "password"},
+        validators=[validate_password],
+    )
+    confirm_password = serializers.CharField(
+        write_only=True,
+        min_length=6,
+        style={"input_type": "password"},
+        validators=[validate_password],
     )
     token = serializers.SerializerMethodField()
 
@@ -51,6 +60,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "phone_number",
             "date_of_birth",
             "password",
+            "confirm_password",
             "token",
         ]
 
@@ -77,6 +87,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=self.initial_data.get("first_name"),
             last_name=self.initial_data.get("last_name"),
         )
+        if value != self.initial_data.get("confirm_password"):
+            raise ValidationError({"password": "Passwords do not match"})
         try:
             validate_password(password=value, user=user)
         except DjangoValidationError as e:
