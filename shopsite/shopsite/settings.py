@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "django_redis",
     "cloudinary",
     "cloudinary_storage",
+    "django_extensions",
 ]
 
 REST_FRAMEWORK = {
