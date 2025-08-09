@@ -21,13 +21,17 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and tag Docker image
+
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/e-commerce_backend
           docker build . -t $IMAGE_NAME:latest -t $IMAGE_NAME:prod-${{ github.sha }}
 
-      - name: Push Docker image
-        run: |
-          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/e-commerce_backend
-          docker tag $IMAGE_NAME:latest $IMAGE_NAME:prod-${{ github.sha }}
-          docker push $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:prod-${{github.sha }}
+      - name: Build and Push multiplatform Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64, linux/arm64
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/e-commerce_backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/e-commerce_backend:prod-${{ github.sha }}
