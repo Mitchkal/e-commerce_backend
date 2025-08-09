@@ -14,4 +14,5 @@ COPY . .
 
 EXPOSE 8000
 
+ENV PYTHONPATH=/app
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "shopsite.wsgi:application"]

@@ -5,7 +5,7 @@ from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-log_file_path = "shopsite/throttling.log"
+log_file_path = "store/throttling.log"
 log_dir = os.path.dirname(log_file_path)
 
 if not os.path.exists(log_dir):

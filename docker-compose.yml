@@ -1,9 +1,9 @@
 services:
   web:
     build: .
-    command: ['gunicorn', '--bind', ':8000', 'shopsite.wsgi.application']
+    command: ['gunicorn', '--bind', ':8000', 'shopsite.wsgi:application']
     volumes:
-      - .:/application
+      - ./shopsite:/app
       - media_volume:/app/media/
     ports:
       - '8000:8000'
@@ -13,7 +13,7 @@ services:
     env_file:
       - .env
     networks:
-      - shopsite-network
+      - shop-network
 
   db:
     image: postgres:latest
@@ -27,19 +27,19 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/db_data
     networks:
-      - shopsite-network
+      - shop-network
   celery-worker:
     build: .
     command: ['celery', '-A', 'shopsite', 'worker', '--loglevel=info']
     volumes:
-      - .:/app
+      - ./shopsite:/app
     depends_on:
       - db
       - redis
     env_file:
       - .env
     networks:
-      - shopsite-network
+      - shop-network
 
   redis:
     image: redis:latest
@@ -51,14 +51,14 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
-      - shopsite-network
+      - shop-network
 
   daphne:
     build: .
     command:
       ['daphne', '-b', '0.0.0.0', '-p', '8001', 'shopsite.asgi:application']
     volumes:
-      - .:/app
+      - ./shopsite:/app
     depends_on:
       - db
       - redis
@@ -69,7 +69,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=shopsite.settings
     networks:
-      - shopsite-network
+      - shop-network
 
 volumes:
   db_data:
@@ -77,5 +77,5 @@ volumes:
   media_volume:
 
 networks:
-  shopsite-network:
+  shop-network:
     driver: bridge
