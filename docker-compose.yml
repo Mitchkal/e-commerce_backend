@@ -3,7 +3,7 @@ services:
     build: .
     command: ['gunicorn', '--bind', ':8000', 'shopsite.wsgi:application']
     volumes:
-      - ./shopsite:/app
+      # - ./shopsite:/app/
       - media_volume:/app/media/
     ports:
       - '8000:8000'
@@ -32,7 +32,7 @@ services:
     build: .
     command: ['celery', '-A', 'shopsite', 'worker', '--loglevel=info']
     volumes:
-      - ./shopsite:/app
+      # - ./shopsite:/app/
     depends_on:
       - db
       - redis
@@ -58,7 +58,7 @@ services:
     command:
       ['daphne', '-b', '0.0.0.0', '-p', '8001', 'shopsite.asgi:application']
     volumes:
-      - ./shopsite:/app
+      # - ./shopsite:/app
     depends_on:
       - db
       - redis
