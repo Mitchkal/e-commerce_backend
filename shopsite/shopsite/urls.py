@@ -28,7 +28,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/", include("store.urls"), namespace="store"),
+    # API endpoints
+    path("api/", include(("store.urls", "store"), namespace="store")),
+    # Schema endpoints
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "docs/swagger/",

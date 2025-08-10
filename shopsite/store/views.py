@@ -1,30 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
 import logging
-import time
-import requests
-from .models import (
-    Customer,
-    Product,
-    Order,
-    Cart,
-    CartItem,
-    Review,
-    Payment,
-    OrderItem,
-    OrderStatus,
-)
-from .serializers import (
-    CustomerSerializer,
-    RegisterSerializer,
-    ProductSerializer,
-    OrderSerializer,
-    CartSerializer,
-    CartItemSerializer,
-    ReviewSerializer,
-    PaymentSerializer,
-    OrderItemSerializer,
-)
+
 
 # from rest_framework import generics
 from rest_framework import viewsets
@@ -51,6 +28,30 @@ from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
 
 
+from .models import (
+    Customer,
+    Product,
+    Order,
+    Cart,
+    CartItem,
+    Review,
+    Payment,
+    OrderItem,
+    OrderStatus,
+)
+from .serializers import (
+    CustomerSerializer,
+    RegisterSerializer,
+    ProductSerializer,
+    OrderSerializer,
+    CartSerializer,
+    CartItemSerializer,
+    ReviewSerializer,
+    PaymentSerializer,
+    OrderItemSerializer,
+)
+
+
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
@@ -69,7 +70,8 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class CustomerAdminViewset(viewsets.ModelViewSet):
     """
-    Viewset for Admin customer management
+    Viewset for Admin CRUD operations for
+    customer management
     """
 
     queryset = Customer.objects.all()
@@ -79,7 +81,10 @@ class CustomerAdminViewset(viewsets.ModelViewSet):
 
 class SignupViewset(CreateAPIView):
     """
-    viewset for customer signup
+    Viewset for customer signup
+    Customer signs up with email and password
+    and receives a welcome email.
+    user is provided with JWT token on succesful signup
     """
 
     serializer_class = RegisterSerializer
@@ -91,9 +96,6 @@ class SignupViewset(CreateAPIView):
         Handle customer signup
         """
         customer = serializer.save()
-        # validate serializer
-        # serializer.is_valid(raise_exception=True)
-
         user = customer
 
         try:
@@ -122,7 +124,7 @@ class SignupViewset(CreateAPIView):
 
 class CustomerProfileViewset(RetrieveUpdateAPIView):
     """
-    allows authenticated users to view and update their profile
+    Allows authenticated users to view and update their profile
     """
 
     serializer_class = CustomerSerializer
@@ -164,45 +166,6 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
 
         return response
 
-
-# class RegisterViewset(viewsets.ModelViewSet):
-#     """
-#     Viewset for customer registration
-#     """
-
-#     serializer_class = RegisterSerializer
-#     queryset = Customer.objects.all()
-
-#     def get_queryset(self):
-#         """
-#         avoid listing registered customers
-#         """
-#         if self.request.method == "GET":
-#             return Customer.objects.none()
-#         return super().get_queryset()
-
-#     def create(self, request, *args, **kwargs):
-#         """
-#         Handles customer registration
-#         """
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#         return Response(
-#             {
-#                 "message": "User created Succesfully",
-#                 "user": {
-#                     "id": user.id,
-#                     "email": user.email,
-#                     "first_name": user.first_name,
-#                     "last_name": user.last_name,
-#                 },
-#             },
-#             status=status.HTTP_201_CREATED,
-#         )
-
-
-# Create your views here.
 
 
 class ProductViewset(viewsets.ModelViewSet):
@@ -352,6 +315,7 @@ class ProductViewset(viewsets.ModelViewSet):
 class CartViewSet(viewsets.ModelViewSet):
     """
     Viewset for the cart model, restricted to the current user
+    Allows authenticated users to view and manage their cart
     """
 
     queryset = Cart.objects.none()
@@ -365,13 +329,7 @@ class CartViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Cart.objects.filter(customer=user)
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     """
-    #     Retrieve cart for authenticated user
-    #     """
-    #     cart = self.get_object()
-    #     serializer = self.get_serializer(cart)
-    #     return Response(serializer.data)
+ 
 
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
@@ -385,7 +343,8 @@ class CartViewSet(viewsets.ModelViewSet):
 
 class CartItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for CartItem model
+    Viewset for crud operations on items in 
+    a customer's cart.
     """
 
     queryset = CartItem.objects.none()
@@ -407,7 +366,9 @@ class CartItemViewset(viewsets.ModelViewSet):
 
 class CheckoutView(APIView):
     """
-    Viewset for checkout operations
+    Viewset to handle checkout operations. 
+    Allows authenticated users to create an
+    order from their cart, then clears the cart.
     """
 
     permission_classes = [IsAuthenticated]
@@ -448,6 +409,7 @@ class CheckoutView(APIView):
             cart=cart,
             shipping_address=request.data.get("shipping_address", ""),
             billing_address=request.data.get("billing_address", ""),
+        )
 
         for item in cart_items.all():
             OrderItem.objects.create(
@@ -461,7 +423,6 @@ class CheckoutView(APIView):
         cart.products.clear()
         serializer = OrderSerializer(order)
 
-     
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
@@ -470,7 +431,8 @@ class CheckoutView(APIView):
 
 class OrderViewset(viewsets.ModelViewSet):
     """
-    Viewset for order model
+    Viewset for order model with custom functions to
+    manage orders and mark their status
     """
 
     queryset = Order.objects.all().order_by("-order_date")
@@ -557,9 +519,10 @@ class OrderViewset(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+
 class PayView(APIView):
     """
-    View for payment processing
+    Processes payments for orders using paystack
     """
 
     permission_classes = [IsAuthenticated]
@@ -585,7 +548,8 @@ class PayView(APIView):
 
 class OrderItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for orderItem model
+    Viewset for orderItem model to
+    manage items in an order
     """
 
     serializer_class = OrderItemSerializer
@@ -597,7 +561,8 @@ class OrderItemViewset(viewsets.ModelViewSet):
 
 class ReviewViewset(viewsets.ModelViewSet):
     """
-    Viewset for Review model
+    Viewset for Review model allowing CRUD operations
+
     """
 
     # queryset = Review.objects.all()
@@ -636,9 +601,10 @@ class ReviewViewset(viewsets.ModelViewSet):
         return response
 
 
-class PaymentViewset(viewsets.ModelViewSet):
+class PaymentViewset(viewsets.ReadOnlyModelViewSet):
     """
-    Viewset for payment model
+    Viewset for payment model, Limited to read only
+    to allow List, and Retrieve actions only
     """
 
     queryset = Payment.objects.all()
@@ -654,38 +620,57 @@ class PaymentViewset(viewsets.ModelViewSet):
             return Payment.objects.all()
         return Payment.objects.filter(customer=user.customer)
 
-    def create(self, request, *args, **kwargs):
-        """
-        Disable payment creation through this viewset
-        """
-        return Response(
-            {"detail": "Payment creation via this endpoint is not allowed."},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
 
-    def update(self, request, *args, **kwargs):
-        """
-        Disable payment updates through this endpoint
-        """
-        return Response(
-            {"detail": "Payment updates via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+# class PaymentViewset(viewsets.ModelViewSet):
+#     """
+#     Viewset for payment model
+#     """
 
-    def partial_update(self, request, *args, **kwargs):
-        """
-        Disable payment partial updates through this endpoint
-        """
-        return Response(
-            {"detail": "Payment partial updates via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+#     queryset = Payment.objects.all()
+#     serializer_class = PaymentSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        """
-        Disable payment deletion through this endpoint
-        """
-        return Response(
-            {"detail": "Payment deletion via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+#     def get_queryset(self):
+#         """
+#         returns payments
+#         """
+#         user = self.request.user
+#         if user.is_staff:
+#             return Payment.objects.all()
+#         return Payment.objects.filter(customer=user.customer)
+
+#     def create(self, request, *args, **kwargs):
+#         """
+#         Payment creation through this viewset is not allowed, handled on pay view instead
+#         """
+#         return Response(
+#             {"detail": "Payment creation via this endpoint is not allowed."},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
+
+#     def update(self, request, *args, **kwargs):
+#         """
+#         Disable payment updates through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment updates via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
+
+#     def partial_update(self, request, *args, **kwargs):
+#         """
+#         Disable payment partial updates through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment partial updates via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
+
+#     def destroy(self, request, *args, **kwargs):
+#         """
+#         Disable payment deletion through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment deletion via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
