@@ -5,7 +5,7 @@ import logging
 
 # from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -26,6 +26,7 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
+from drf_spectacular.utils import extend_schema
 
 
 from .models import (
@@ -40,7 +41,9 @@ from .models import (
     OrderStatus,
 )
 from .serializers import (
+    CheckoutRequestSerializer,
     CustomerSerializer,
+    PayRequestSerializer,
     RegisterSerializer,
     ProductSerializer,
     OrderSerializer,
@@ -49,6 +52,8 @@ from .serializers import (
     ReviewSerializer,
     PaymentSerializer,
     OrderItemSerializer,
+    PayResponseSerializer,
+
 )
 
 
@@ -58,7 +63,7 @@ User = get_user_model()
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
-    temporariliy exexempt csrf in dev
+    temporariliy exempt csrf in dev mode
     """
 
     def enforce_csrf(self, request):
@@ -201,23 +206,6 @@ class ProductViewset(viewsets.ModelViewSet):
             )
         )
 
-        # key = "product_list"
-        # cached_products = cache.get(key)
-        # if cached_products is None:
-        #     cached_products = (
-        #         Product.objects.all()
-        #         .order_by("-price")
-        #         .annotate(
-        #             annotated_is_in_stock=Case(
-        #                 When(stock__gt=0, then=Value(True)),
-        #                 default=Value(False),
-        #                 output_field=BooleanField(),
-        #             )
-        #         )
-        #     )
-        #     # cache queryset for 15 minutes
-        #     cache.set(key, cached_products, timeout=60 * 15)
-        # return cached_products
 
     def list(self, request, *args, **kwargs):
         """
@@ -363,8 +351,11 @@ class CartItemViewset(viewsets.ModelViewSet):
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()
 
-
-class CheckoutView(APIView):
+@extend_schema(
+    request=CheckoutRequestSerializer,
+    responses={201: OrderSerializer, 400: dict, 404: dict}
+)
+class CheckoutView(GenericAPIView):
     """
     Viewset to handle checkout operations. 
     Allows authenticated users to create an
@@ -372,12 +363,19 @@ class CheckoutView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+    serializer_class = CheckoutRequestSerializer
+    response_serializer_class = OrderSerializer
+    
 
     @transaction.atomic
     def post(self, request):
         """
         Handles checkout for an authenticated user
         """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
         user = request.user
         cart = Cart.objects.filter(customer=user).first()
 
@@ -407,8 +405,8 @@ class CheckoutView(APIView):
         order = Order.objects.create(
             customer=cart.customer,
             cart=cart,
-            shipping_address=request.data.get("shipping_address", ""),
-            billing_address=request.data.get("billing_address", ""),
+            shipping_address=validated_data.get("shipping_address", ""),
+            billing_address=validated_data.get("billing_address", ""),
         )
 
         for item in cart_items.all():
@@ -421,10 +419,10 @@ class CheckoutView(APIView):
 
         cart.cart_items.all().delete()
         cart.products.clear()
-        serializer = OrderSerializer(order)
+        res_serializer = OrderSerializer(order)
 
         return Response(
-            serializer.data,
+            res_serializer.data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -520,17 +518,25 @@ class OrderViewset(viewsets.ModelViewSet):
         )
 
 
-class PayView(APIView):
+@extend_schema(
+    request=PayRequestSerializer,
+    responses={200: PayResponseSerializer, 404: dict}
+)
+class PayView(GenericAPIView):
     """
     Processes payments for orders using paystack
     """
 
     permission_classes = [IsAuthenticated]
+    serializer_class = PayRequestSerializer
 
     def post(self, request, order_id=None):
         """
         Payment processing with Paystack
         """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = request.user
         # order_id = request.data.get("order_id")
         try:
