@@ -448,9 +448,7 @@ class CheckoutView(APIView):
             cart=cart,
             shipping_address=request.data.get("shipping_address", ""),
             billing_address=request.data.get("billing_address", ""),
-            # products=cart.products.all(),
-            # total_price=sum(item.product.price * item.quantity for item in cart_items),
-        )
+
         for item in cart_items.all():
             OrderItem.objects.create(
                 order=order,
@@ -463,12 +461,7 @@ class CheckoutView(APIView):
         cart.products.clear()
         serializer = OrderSerializer(order)
 
-        # serializer = self.get_serializer(order)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save(customer=cart.customer, products=cart.products.all())
-
-        # # Clear cart after order creation
-        # cart.products.clear()
+     
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
@@ -554,7 +547,7 @@ class OrderViewset(viewsets.ModelViewSet):
 
         if order.status != OrderStatus.PROCESSING:
             return Response(
-                {"detail": "Cannot ,mark unprocessed order as shipped"},
+                {"detail": "Cannot mark unprocessed order as shipped"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         order.status = OrderStatus.SHIPPED
@@ -563,75 +556,6 @@ class OrderViewset(viewsets.ModelViewSet):
             {"detail": "Order marked as shipped succesfully"},
             status=status.HTTP_200_OK,
         )
-
-    # @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
-    # def retry_payment(self, request, *args, **kwargs):
-    #     """
-    #     Allow user to retry failed payment for an order
-    #     """
-
-
-#
-
-# def create(self, request, *args, **kwargs):
-#     """
-#     Create an order for authenticated user
-#     """
-#     user = request.user
-
-#     cart = Cart.objects.filter(customer=user).first()
-
-#     if not cart:
-#         return Response(
-#             {"message": "Cart not Found"},
-#             status=status.HTTP_404_NOT_FOUND,
-#         )
-#     cart_items = cart.cart_items.all()
-#     print(f"Cart Items: {cart_items}")
-#     if not cart_items.exists():
-#         return Response(
-#             {"message": "Cart is empty, cannot create order"},
-#             status=status.HTTP_400_BAD_REQUEST,
-#         )
-#     total = sum(item.product.price * item.quantity for item in cart_items)
-
-#     order = Order.objects.create(
-#         customer=cart.customer,
-#         cart=cart,
-#         shipping_address=request.data.get("shipping_address", ""),
-#         billing_address=request.data.get("billing_address", ""),
-#         total_price=total,
-#         # products=cart.products.all(),
-#         # total_price=sum(item.product.price * item.quantity for item in cart_items),
-#     )
-#     for cart_item in cart.cart_items.all():
-#         OrderItem.objects.create(
-#             order=order,
-#             product=cart_item.product,
-#             quantity=cart_item.quantity,
-#             price=cart_item.product.price,
-#         )
-#     # clear cart
-#     cart.cart_items.all().delete()
-#     cart.products.clear()
-
-#     serializer = self.get_serializer(order)
-#     # serializer.is_valid(raise_exception=True)
-#     # serializer.save(customer=cart.customer, products=cart.products.all())
-
-#     # # Clear cart after order creation
-#     # cart.products.clear()
-#     return Response(
-#         {
-#             "message": "Order created",
-#             "order": serializer.data,
-#             "order_id": str(order.id),
-#             "total": float(order.total_amount),
-#             "payment_url": f"/api/pay/{order.id}/"
-#         },
-#         status=status.HTTP_201_CREATED,
-#     )
-
 
 class PayView(APIView):
     """
@@ -765,21 +689,3 @@ class PaymentViewset(viewsets.ModelViewSet):
             {"detail": "Payment deletion via this endpoint disallowed"},
             status=status.HTTP_405_METHOD_NOT_ALLOWED,
         )
-
-    # def create(self, request, *args, **kwargs):
-    #     """
-    #     Create payment for an order
-    #     """
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save(customer=request.user.customer)
-    #     return Response(
-    #         serializer.data,
-    #         status=status.HTTP_201_CREATED,
-    #     )
-
-    # @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
-    # def retry(self, request, pk=None):
-    #     """
-    #     Retry payment for an order if failed
-    #     """
