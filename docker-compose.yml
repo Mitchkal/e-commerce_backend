@@ -1,15 +1,18 @@
 services:
   web:
     build: .
+    entrypoint: ['./entrypoint.sh']
     command: ['gunicorn', '--bind', ':8000', 'shopsite.wsgi:application']
     volumes:
-      # - ./shopsite:/app/
+      - ./shopsite:/app
       - media_volume:/app/media/
+      - ./Divi-Engine-WooCommerce-Sample-Products.csv:/app/Divi-Engine-WooCommerce-Sample-Products.csv
     ports:
       - '8000:8000'
     depends_on:
       - db
       - redis
+      - rabbitmq
     env_file:
       - .env
     networks:
@@ -30,12 +33,14 @@ services:
       - shop-network
   celery-worker:
     build: .
+    entrypoint: ['./entrypoint.sh']
     command: ['celery', '-A', 'shopsite', 'worker', '--loglevel=info']
     volumes:
-      # - ./shopsite:/app/
+      - ./shopsite:/app
     depends_on:
       - db
       - redis
+      - rabbitmq
     env_file:
       - .env
     networks:
@@ -53,21 +58,20 @@ services:
     networks:
       - shop-network
 
-  daphne:
-    build: .
-    command:
-      ['daphne', '-b', '0.0.0.0', '-p', '8001', 'shopsite.asgi:application']
-    volumes:
-      # - ./shopsite:/app
-    depends_on:
-      - db
-      - redis
-    env_file:
-      - .env
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
     ports:
-      - '8001:8001'
+      - '15672:15672'
+      - '5672:5672'
     environment:
-      - DJANGO_SETTINGS_MODULE=shopsite.settings
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - shop-network
 
@@ -75,6 +79,7 @@ volumes:
   db_data:
   redis_data:
   media_volume:
+  rabbitmq_data:
 
 networks:
   shop-network:
