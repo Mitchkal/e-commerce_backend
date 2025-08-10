@@ -162,12 +162,7 @@ class Order(models.Model):
     cart = models.ForeignKey(
         Cart, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
     )
-    # For multiple cart items
-    # products = models.ManyToManyField(
-    #     Product, through="CartItem", blank=True, related_name="orders"
-    # )
 
-    # total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     order_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=50,

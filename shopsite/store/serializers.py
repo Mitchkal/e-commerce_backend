@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from .models import Customer, Product, Order, Cart, CartItem, Review, Payment, OrderItem
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -284,3 +284,35 @@ class PaymentSerializer(serializers.ModelSerializer):
             "payment_method": {"required": True},
             "payment_status": {"required": True},
         }
+
+class CheckoutRequestSerializer(serializers.Serializer):
+    """
+    Serializer for incoming checkout request
+    """
+    # cart_id = serializers.UUIDField(required=True)
+    # payment_method = serializers.ChoiceField(
+    #     choices=["credit_card", "paypal", "mpesa"], required=True
+    # )
+    shipping_address = serializers.CharField(required=True)
+    billing_address = serializers.CharField(required=True)
+
+# class CheckoutResponseSerializer(serializers.Serializer):
+#     """
+#     serializer for checkout response
+#     """
+#     message = serializers.CharField()
+#     order_id = serializers.UUIDField()
+
+class PayRequestSerializer(serializers.Serializer):
+    """
+    serializer for initiating a payment request
+    """
+    order_id = serializers.IntegerField(required=False)
+
+class PayResponseSerializer(serializers.Serializer):
+    """
+    serializer for Paystack payment Response
+    """
+    status = serializers.CharField()
+    message = serializers.CharField()
+    data = serializers.JSONField()

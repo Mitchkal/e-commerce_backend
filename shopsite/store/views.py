@@ -1,34 +1,11 @@
 from django.shortcuts import render
 from django.conf import settings
 import logging
-import time
-import requests
-from .models import (
-    Customer,
-    Product,
-    Order,
-    Cart,
-    CartItem,
-    Review,
-    Payment,
-    OrderItem,
-    OrderStatus,
-)
-from .serializers import (
-    CustomerSerializer,
-    RegisterSerializer,
-    ProductSerializer,
-    OrderSerializer,
-    CartSerializer,
-    CartItemSerializer,
-    ReviewSerializer,
-    PaymentSerializer,
-    OrderItemSerializer,
-)
+
 
 # from rest_framework import generics
 from rest_framework import viewsets
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -49,6 +26,35 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
+from drf_spectacular.utils import extend_schema
+
+
+from .models import (
+    Customer,
+    Product,
+    Order,
+    Cart,
+    CartItem,
+    Review,
+    Payment,
+    OrderItem,
+    OrderStatus,
+)
+from .serializers import (
+    CheckoutRequestSerializer,
+    CustomerSerializer,
+    PayRequestSerializer,
+    RegisterSerializer,
+    ProductSerializer,
+    OrderSerializer,
+    CartSerializer,
+    CartItemSerializer,
+    ReviewSerializer,
+    PaymentSerializer,
+    OrderItemSerializer,
+    PayResponseSerializer,
+
+)
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +63,7 @@ User = get_user_model()
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
-    temporariliy exexempt csrf in dev
+    temporariliy exempt csrf in dev mode
     """
 
     def enforce_csrf(self, request):
@@ -69,17 +75,21 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 class CustomerAdminViewset(viewsets.ModelViewSet):
     """
-    Viewset for Admin customer management
+    Viewset for Admin CRUD operations for
+    customer management
     """
 
-    queryset = Customer.objects.all()
+    queryset = Customer.objects.all().order_by('id')
     serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 
 
 class SignupViewset(CreateAPIView):
     """
-    viewset for customer signup
+    Viewset for customer signup
+    Customer signs up with email and password
+    and receives a welcome email.
+    user is provided with JWT token on succesful signup
     """
 
     serializer_class = RegisterSerializer
@@ -91,9 +101,6 @@ class SignupViewset(CreateAPIView):
         Handle customer signup
         """
         customer = serializer.save()
-        # validate serializer
-        # serializer.is_valid(raise_exception=True)
-
         user = customer
 
         try:
@@ -122,7 +129,7 @@ class SignupViewset(CreateAPIView):
 
 class CustomerProfileViewset(RetrieveUpdateAPIView):
     """
-    allows authenticated users to view and update their profile
+    Allows authenticated users to view and update their profile
     """
 
     serializer_class = CustomerSerializer
@@ -165,45 +172,6 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
         return response
 
 
-# class RegisterViewset(viewsets.ModelViewSet):
-#     """
-#     Viewset for customer registration
-#     """
-
-#     serializer_class = RegisterSerializer
-#     queryset = Customer.objects.all()
-
-#     def get_queryset(self):
-#         """
-#         avoid listing registered customers
-#         """
-#         if self.request.method == "GET":
-#             return Customer.objects.none()
-#         return super().get_queryset()
-
-#     def create(self, request, *args, **kwargs):
-#         """
-#         Handles customer registration
-#         """
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#         return Response(
-#             {
-#                 "message": "User created Succesfully",
-#                 "user": {
-#                     "id": user.id,
-#                     "email": user.email,
-#                     "first_name": user.first_name,
-#                     "last_name": user.last_name,
-#                 },
-#             },
-#             status=status.HTTP_201_CREATED,
-#         )
-
-
-# Create your views here.
-
 
 class ProductViewset(viewsets.ModelViewSet):
     """
@@ -238,23 +206,6 @@ class ProductViewset(viewsets.ModelViewSet):
             )
         )
 
-        # key = "product_list"
-        # cached_products = cache.get(key)
-        # if cached_products is None:
-        #     cached_products = (
-        #         Product.objects.all()
-        #         .order_by("-price")
-        #         .annotate(
-        #             annotated_is_in_stock=Case(
-        #                 When(stock__gt=0, then=Value(True)),
-        #                 default=Value(False),
-        #                 output_field=BooleanField(),
-        #             )
-        #         )
-        #     )
-        #     # cache queryset for 15 minutes
-        #     cache.set(key, cached_products, timeout=60 * 15)
-        # return cached_products
 
     def list(self, request, *args, **kwargs):
         """
@@ -352,6 +303,7 @@ class ProductViewset(viewsets.ModelViewSet):
 class CartViewSet(viewsets.ModelViewSet):
     """
     Viewset for the cart model, restricted to the current user
+    Allows authenticated users to view and manage their cart
     """
 
     queryset = Cart.objects.none()
@@ -365,13 +317,7 @@ class CartViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Cart.objects.filter(customer=user)
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     """
-    #     Retrieve cart for authenticated user
-    #     """
-    #     cart = self.get_object()
-    #     serializer = self.get_serializer(cart)
-    #     return Response(serializer.data)
+ 
 
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
@@ -385,7 +331,8 @@ class CartViewSet(viewsets.ModelViewSet):
 
 class CartItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for CartItem model
+    Viewset for crud operations on items in 
+    a customer's cart.
     """
 
     queryset = CartItem.objects.none()
@@ -404,19 +351,31 @@ class CartItemViewset(viewsets.ModelViewSet):
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()
 
-
-class CheckoutView(APIView):
+@extend_schema(
+    request=CheckoutRequestSerializer,
+    responses={201: OrderSerializer, 400: dict, 404: dict}
+)
+class CheckoutView(GenericAPIView):
     """
-    Viewset for checkout operations
+    Viewset to handle checkout operations. 
+    Allows authenticated users to create an
+    order from their cart, then clears the cart.
     """
 
     permission_classes = [IsAuthenticated]
+    serializer_class = CheckoutRequestSerializer
+    response_serializer_class = OrderSerializer
+    
 
     @transaction.atomic
     def post(self, request):
         """
         Handles checkout for an authenticated user
         """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
         user = request.user
         cart = Cart.objects.filter(customer=user).first()
 
@@ -446,11 +405,10 @@ class CheckoutView(APIView):
         order = Order.objects.create(
             customer=cart.customer,
             cart=cart,
-            shipping_address=request.data.get("shipping_address", ""),
-            billing_address=request.data.get("billing_address", ""),
-            # products=cart.products.all(),
-            # total_price=sum(item.product.price * item.quantity for item in cart_items),
+            shipping_address=validated_data.get("shipping_address", ""),
+            billing_address=validated_data.get("billing_address", ""),
         )
+
         for item in cart_items.all():
             OrderItem.objects.create(
                 order=order,
@@ -461,23 +419,18 @@ class CheckoutView(APIView):
 
         cart.cart_items.all().delete()
         cart.products.clear()
-        serializer = OrderSerializer(order)
+        res_serializer = OrderSerializer(order)
 
-        # serializer = self.get_serializer(order)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save(customer=cart.customer, products=cart.products.all())
-
-        # # Clear cart after order creation
-        # cart.products.clear()
         return Response(
-            serializer.data,
+            res_serializer.data,
             status=status.HTTP_201_CREATED,
         )
 
 
 class OrderViewset(viewsets.ModelViewSet):
     """
-    Viewset for order model
+    Viewset for order model with custom functions to
+    manage orders and mark their status
     """
 
     queryset = Order.objects.all().order_by("-order_date")
@@ -554,7 +507,7 @@ class OrderViewset(viewsets.ModelViewSet):
 
         if order.status != OrderStatus.PROCESSING:
             return Response(
-                {"detail": "Cannot ,mark unprocessed order as shipped"},
+                {"detail": "Cannot mark unprocessed order as shipped"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         order.status = OrderStatus.SHIPPED
@@ -564,86 +517,26 @@ class OrderViewset(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
-    # @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
-    # def retry_payment(self, request, *args, **kwargs):
-    #     """
-    #     Allow user to retry failed payment for an order
-    #     """
 
-
-#
-
-# def create(self, request, *args, **kwargs):
-#     """
-#     Create an order for authenticated user
-#     """
-#     user = request.user
-
-#     cart = Cart.objects.filter(customer=user).first()
-
-#     if not cart:
-#         return Response(
-#             {"message": "Cart not Found"},
-#             status=status.HTTP_404_NOT_FOUND,
-#         )
-#     cart_items = cart.cart_items.all()
-#     print(f"Cart Items: {cart_items}")
-#     if not cart_items.exists():
-#         return Response(
-#             {"message": "Cart is empty, cannot create order"},
-#             status=status.HTTP_400_BAD_REQUEST,
-#         )
-#     total = sum(item.product.price * item.quantity for item in cart_items)
-
-#     order = Order.objects.create(
-#         customer=cart.customer,
-#         cart=cart,
-#         shipping_address=request.data.get("shipping_address", ""),
-#         billing_address=request.data.get("billing_address", ""),
-#         total_price=total,
-#         # products=cart.products.all(),
-#         # total_price=sum(item.product.price * item.quantity for item in cart_items),
-#     )
-#     for cart_item in cart.cart_items.all():
-#         OrderItem.objects.create(
-#             order=order,
-#             product=cart_item.product,
-#             quantity=cart_item.quantity,
-#             price=cart_item.product.price,
-#         )
-#     # clear cart
-#     cart.cart_items.all().delete()
-#     cart.products.clear()
-
-#     serializer = self.get_serializer(order)
-#     # serializer.is_valid(raise_exception=True)
-#     # serializer.save(customer=cart.customer, products=cart.products.all())
-
-#     # # Clear cart after order creation
-#     # cart.products.clear()
-#     return Response(
-#         {
-#             "message": "Order created",
-#             "order": serializer.data,
-#             "order_id": str(order.id),
-#             "total": float(order.total_amount),
-#             "payment_url": f"/api/pay/{order.id}/"
-#         },
-#         status=status.HTTP_201_CREATED,
-#     )
-
-
-class PayView(APIView):
+@extend_schema(
+    request=PayRequestSerializer,
+    responses={200: PayResponseSerializer, 404: dict}
+)
+class PayView(GenericAPIView):
     """
-    View for payment processing
+    Processes payments for orders using paystack
     """
 
     permission_classes = [IsAuthenticated]
+    serializer_class = PayRequestSerializer
 
     def post(self, request, order_id=None):
         """
         Payment processing with Paystack
         """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = request.user
         # order_id = request.data.get("order_id")
         try:
@@ -661,7 +554,8 @@ class PayView(APIView):
 
 class OrderItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for orderItem model
+    Viewset for orderItem model to
+    manage items in an order
     """
 
     serializer_class = OrderItemSerializer
@@ -673,7 +567,8 @@ class OrderItemViewset(viewsets.ModelViewSet):
 
 class ReviewViewset(viewsets.ModelViewSet):
     """
-    Viewset for Review model
+    Viewset for Review model allowing CRUD operations
+
     """
 
     # queryset = Review.objects.all()
@@ -712,9 +607,10 @@ class ReviewViewset(viewsets.ModelViewSet):
         return response
 
 
-class PaymentViewset(viewsets.ModelViewSet):
+class PaymentViewset(viewsets.ReadOnlyModelViewSet):
     """
-    Viewset for payment model
+    Viewset for payment model, Limited to read only
+    to allow List, and Retrieve actions only
     """
 
     queryset = Payment.objects.all()
@@ -730,56 +626,57 @@ class PaymentViewset(viewsets.ModelViewSet):
             return Payment.objects.all()
         return Payment.objects.filter(customer=user.customer)
 
-    def create(self, request, *args, **kwargs):
-        """
-        Disable payment creation through this viewset
-        """
-        return Response(
-            {"detail": "Payment creation via this endpoint is not allowed."},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
 
-    def update(self, request, *args, **kwargs):
-        """
-        Disable payment updates through this endpoint
-        """
-        return Response(
-            {"detail": "Payment updates via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+# class PaymentViewset(viewsets.ModelViewSet):
+#     """
+#     Viewset for payment model
+#     """
 
-    def partial_update(self, request, *args, **kwargs):
-        """
-        Disable payment partial updates through this endpoint
-        """
-        return Response(
-            {"detail": "Payment partial updates via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+#     queryset = Payment.objects.all()
+#     serializer_class = PaymentSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        """
-        Disable payment deletion through this endpoint
-        """
-        return Response(
-            {"detail": "Payment deletion via this endpoint disallowed"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+#     def get_queryset(self):
+#         """
+#         returns payments
+#         """
+#         user = self.request.user
+#         if user.is_staff:
+#             return Payment.objects.all()
+#         return Payment.objects.filter(customer=user.customer)
 
-    # def create(self, request, *args, **kwargs):
-    #     """
-    #     Create payment for an order
-    #     """
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save(customer=request.user.customer)
-    #     return Response(
-    #         serializer.data,
-    #         status=status.HTTP_201_CREATED,
-    #     )
+#     def create(self, request, *args, **kwargs):
+#         """
+#         Payment creation through this viewset is not allowed, handled on pay view instead
+#         """
+#         return Response(
+#             {"detail": "Payment creation via this endpoint is not allowed."},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
 
-    # @action(detail=True, methods=["get"], permission_classes=[IsAuthenticated])
-    # def retry(self, request, pk=None):
-    #     """
-    #     Retry payment for an order if failed
-    #     """
+#     def update(self, request, *args, **kwargs):
+#         """
+#         Disable payment updates through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment updates via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
+
+#     def partial_update(self, request, *args, **kwargs):
+#         """
+#         Disable payment partial updates through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment partial updates via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
+
+#     def destroy(self, request, *args, **kwargs):
+#         """
+#         Disable payment deletion through this endpoint
+#         """
+#         return Response(
+#             {"detail": "Payment deletion via this endpoint disallowed"},
+#             status=status.HTTP_405_METHOD_NOT_ALLOWED,
+#         )
