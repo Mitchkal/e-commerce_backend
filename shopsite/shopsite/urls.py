@@ -29,6 +29,12 @@ from drf_spectacular.views import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+
+
+def home(request):
+    return HttpResponse("ShopSite API is up!", status=200)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -46,5 +52,6 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("", home, name="home"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
