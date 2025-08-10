@@ -79,7 +79,7 @@ class CustomerAdminViewset(viewsets.ModelViewSet):
     customer management
     """
 
-    queryset = Customer.objects.all()
+    queryset = Customer.objects.all().order_by('id')
     serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 

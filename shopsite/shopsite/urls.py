@@ -3,6 +3,7 @@ Root URL configuration for shopsite project.
 """
 
 from django.http import HttpResponse
+from django.shortcuts import render
 
 from django.conf import settings
 from django.contrib import admin
@@ -21,7 +22,9 @@ from drf_spectacular.views import (
 
 
 def home(request):
-    return HttpResponse("ShopSite API is up!", status=200)
+    if request.GET.get("status") == "true":
+        return HttpResponse("ShopSite API is up!", status=200)
+    return render(request, "home.html", {"redoc_url": request.build_absolute_uri("/docs/redoc/"), "swagger_url": request.build_absolute_uri("/docs/swagger/"),})
 
 
 urlpatterns = [
