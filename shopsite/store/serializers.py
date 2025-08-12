@@ -106,6 +106,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
 
+# class ConfirmEmailSerializer(serializers.Serializer):
+#     """
+#     Serializer for email confirmation
+#     """
+
+#     uid = serializers.CharField()
+#     token = serializers.CharField()
+
+
 class ForgotPasswordSerializer(serializers.Serializer):
     """
     Serializer for forgot password request

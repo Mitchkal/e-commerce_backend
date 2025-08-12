@@ -28,7 +28,7 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlencode, urlsafe_base64_encode, urlsafe_base64_decode
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 
 from .models import (
@@ -44,6 +44,7 @@ from .models import (
 )
 from .serializers import (
     CheckoutRequestSerializer,
+    # ConfirmEmailSerializer,
     CustomerSerializer,
     ForgotPasswordSerializer,
     PayRequestSerializer,
@@ -52,6 +53,7 @@ from .serializers import (
     OrderSerializer,
     CartSerializer,
     CartItemSerializer,
+    ResetPasswordSerializer,
     ReviewSerializer,
     PaymentSerializer,
     OrderItemSerializer,
@@ -102,19 +104,25 @@ class SignupViewset(CreateAPIView):
         """
         Handle customer signup
         """
-        customer = serializer.save()
+        customer = serializer.save(is_active=False)
         user = customer
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        confirm_link = f"{settings.FRONTEND_URL}/api/confirm-email/{uid}/{token}/"
 
         try:
             send_email_task.delay(
-                subject="Welcome to our store!",
-                template_name="emails/welcome.html",
-                context={"user": user.first_name},
+                subject="Confirm your email",
+                template_name="emails/confirm_email.html",
+                context={"user": user.first_name, "confirm_link": confirm_link},
                 to_email=user.email,
             )
         except Exception as e:
-            logger.error(f"Failed to send welcome email: {str(e)}")
+            logger.error(f"Failed to send confirmation email: {str(e)}")
 
+        print(confirm_link)
         return Response(
             {
                 "message": "User created",
@@ -126,6 +134,55 @@ class SignupViewset(CreateAPIView):
                 },
             },
             status=status.HTTP_201_CREATED,
+        )
+
+
+class ConfirmEmailView(APIView):
+    """
+    confirms user email
+    """
+
+    # serializer_class = ConfirmEmailSerializer
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("uuidb64", str, "Base64 encoded user ID"),
+            OpenApiParameter("token", str, "Email confirmation token"),
+        ],
+        responses={
+            200: OpenApiResponse(description="Email confirmed successfully"),
+            400: OpenApiResponse(description="Invalid token or user does not exist"),
+        },
+    )
+    def get(self, request, uuidb64, token):
+
+        # serializer = self.serializer_class(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+
+        # uid = serializer.validated_data.get("uuidb64")
+        # token = serializer.validated_data.get("token")
+
+        try:
+            uid = urlsafe_base64_decode(uuidb64).decode()
+            user = Customer.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Customer.DoesNotExist):
+            return Response(
+                {"error": "Invalid token or user does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"error": "Invalid or expired token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_active = True
+        user.save()
+        return Response(
+            {"message": "Email confirmed successfully, You can now log in"},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -168,11 +225,15 @@ class ResetPasswordView(APIView):
     """
 
     permission_classes = [AllowAny]
+    serializer_class = ResetPasswordSerializer
 
     def post(self, request, uuid64, token):
         """
         Accepts token and new password
         """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         try:
             uid = urlsafe_base64_decode(uuid64, token)
             user = Customer.objects.get(pk=uid)
@@ -186,7 +247,7 @@ class ResetPasswordView(APIView):
                 {"error": "Invalid token"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        new_password = request.data.get("password")
+        new_password = serializer.validated_data.get("password")
         if not new_password:
             return Response(
                 {"error": "Password required"}, status=status.HTTP_400_BAD_REQUEST

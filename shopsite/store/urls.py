@@ -2,6 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
+    ConfirmEmailView,
     CustomerAdminViewset,
     CustomerProfileViewset,
     SignupViewset,
@@ -45,9 +46,14 @@ urlpatterns = [
     path("pay/", PayView.as_view(), name="pay"),
     path("forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
     path(
-        "reset-password/<uuid64>/<token>/",
+        "reset-password/<str:uuid64>/<str:token>/",
         ResetPasswordView.as_view(),
         name="reset-password",
+    ),
+    path(
+        "api/confirm-email/<str:uuidb64>/<str:token>/",
+        ConfirmEmailView.as_view(),
+        name="confirm-email",
     ),
     # path(
     #     "reset-password/<uid>/<token>/",

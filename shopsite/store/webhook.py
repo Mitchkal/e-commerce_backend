@@ -5,8 +5,16 @@ from django.http import JsonResponse
 from django.conf import settings
 from .models import Payment, PaymentStatus, OrderStatus
 from .emails.tasks import send_email_task
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 
+@extend_schema(
+    request=OpenApiResponse(description="Paystack webhook payload"),
+    responses={
+        200: OpenApiResponse(description="Webhook received successfully"),
+        400: OpenApiResponse(description="Invalid webhook payload"),
+    },
+)
 @csrf_exempt
 def paystack_webhook(request):
     if request.method == "POST":
