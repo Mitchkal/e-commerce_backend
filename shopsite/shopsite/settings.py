@@ -14,6 +14,9 @@ from pathlib import Path
 from datetime import timedelta
 import load_dotenv
 import os
+import socket
+
+IS_DOCKER = os.environ.get("RUNNING_IN_DOCKER") == "true"
 
 # Load environment variables from .env
 load_dotenv.load_dotenv()
@@ -58,6 +61,7 @@ INSTALLED_APPS = [
     "django_redis",
     "cloudinary",
     "cloudinary_storage",
+    "django_extensions",
 ]
 
 REST_FRAMEWORK = {
@@ -154,7 +158,7 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": "db" if IS_DOCKER else "localhost",
         "PORT": "5432",
     }
 }
@@ -177,7 +181,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis") if IS_DOCKER else "localhost"
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 
 
@@ -197,9 +201,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "dumberd638@gmail.com")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"

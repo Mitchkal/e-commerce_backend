@@ -53,7 +53,6 @@ from .serializers import (
     PaymentSerializer,
     OrderItemSerializer,
     PayResponseSerializer,
-
 )
 
 
@@ -79,7 +78,7 @@ class CustomerAdminViewset(viewsets.ModelViewSet):
     customer management
     """
 
-    queryset = Customer.objects.all().order_by('id')
+    queryset = Customer.objects.all().order_by("id")
     serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 
@@ -172,7 +171,6 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
         return response
 
 
-
 class ProductViewset(viewsets.ModelViewSet):
     """
     Viewset for Product Model CRUD operations
@@ -205,7 +203,6 @@ class ProductViewset(viewsets.ModelViewSet):
                 )
             )
         )
-
 
     def list(self, request, *args, **kwargs):
         """
@@ -286,7 +283,7 @@ class ProductViewset(viewsets.ModelViewSet):
         Removes a product from the cart
         """
         product = self.get_object()
-        cart = Cart.objects.get(user=request.user)
+        cart = Cart.objects.get(customer=request.user)
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()
         if cart_item:
             cart_item.delete()
@@ -317,8 +314,6 @@ class CartViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Cart.objects.filter(customer=user)
 
- 
-
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
         """
@@ -331,7 +326,7 @@ class CartViewSet(viewsets.ModelViewSet):
 
 class CartItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for crud operations on items in 
+    Viewset for crud operations on items in
     a customer's cart.
     """
 
@@ -351,13 +346,14 @@ class CartItemViewset(viewsets.ModelViewSet):
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()
 
+
 @extend_schema(
     request=CheckoutRequestSerializer,
-    responses={201: OrderSerializer, 400: dict, 404: dict}
+    responses={201: OrderSerializer, 400: dict, 404: dict},
 )
 class CheckoutView(GenericAPIView):
     """
-    Viewset to handle checkout operations. 
+    Viewset to handle checkout operations.
     Allows authenticated users to create an
     order from their cart, then clears the cart.
     """
@@ -365,7 +361,6 @@ class CheckoutView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CheckoutRequestSerializer
     response_serializer_class = OrderSerializer
-    
 
     @transaction.atomic
     def post(self, request):
@@ -519,8 +514,7 @@ class OrderViewset(viewsets.ModelViewSet):
 
 
 @extend_schema(
-    request=PayRequestSerializer,
-    responses={200: PayResponseSerializer, 404: dict}
+    request=PayRequestSerializer, responses={200: PayResponseSerializer, 404: dict}
 )
 class PayView(GenericAPIView):
     """
@@ -577,8 +571,18 @@ class ReviewViewset(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """
-        Save a review with the authenticated user as author
+        Save a review with the authenticated user as author.
+        Allow review creation only if a customer has a paid order.
         """
+        user = self.request.user
+        if not user.is_authenticated:
+            raise PermissionError("You must be logged in to leave a review")
+        user_order = Order.objects.filter(
+            customer=user, status=OrderStatus.COMPLETED
+        ).first()
+        if not user_order:
+            raise PermissionError("You must have a completed order to leave a review")
+
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
@@ -624,7 +628,7 @@ class PaymentViewset(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Payment.objects.all()
-        return Payment.objects.filter(customer=user.customer)
+        return Payment.objects.filter(customer=user)
 
 
 # class PaymentViewset(viewsets.ModelViewSet):

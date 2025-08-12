@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/db_data
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/db_data
+    environment:
+      REDIS_PASSWORD:
+    networks:
+      - shop-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - shop-network
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    command: celery -A shopsite worker -loglevel=info
+    environment:
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+  flower:
+    image: mher/flower
+    container_name: flower
+    command: celery flower --broker=amqp://guest:guest@rabbitmq:5672//
+    ports:
+      - '5555:5555'
+    environment:
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - celery_worker
+
+volumes:
+  db_data:
+  redis_data:
+  rabbitmq_data:
