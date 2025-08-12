@@ -63,18 +63,27 @@ class RegisterSerializer(serializers.ModelSerializer):
             "confirm_password",
             "token",
         ]
+        extra_kwargs = {
+            "email": {"write_only": True},
+            "first_name": {"write_only": True},
+            "last_name": {"write_only": True},
+            "phone_number": {"write_only": True},
+            "date_of_birth": {"write_only": True},
+        }
 
     def create(self, validated_data):
         """
         Create a new customer instance
         """
+        validated_data.pop("confirm_password", None)
         user = Customer.objects.create_user(
-            email=validated_data.get("email", ""),
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
-            phone_number=validated_data.get("phone_number", ""),
-            date_of_birth=validated_data.get("date_of_birth", ""),
-            password=validated_data.get("password", ""),
+            **validated_data
+            #     email=validated_data.get("email", ""),
+            #     first_name=validated_data.get("first_name", ""),
+            #     last_name=validated_data.get("last_name", ""),
+            #     phone_number=validated_data.get("phone_number", ""),
+            #     date_of_birth=validated_data.get("date_of_birth", ""),
+            #     password=validated_data.get("password", ""),
         )
         return user
 

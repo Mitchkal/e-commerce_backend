@@ -149,7 +149,8 @@ WSGI_APPLICATION = "shopsite.wsgi.application"
 
 # MEDIA_ROOT = BASE_DIR / "media"
 
-
+# for celery
+SECRET_KEY = os.getenv("DJANGO_SECRET")
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
