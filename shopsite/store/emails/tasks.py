@@ -16,13 +16,20 @@ def send_email_task(self, subject, template_name, context, to_email):
     of 60 seconds between retries
     """
     try:
-        message = render_to_string(template_name, context)
+        html_content = render_to_string(template_name, context)
+        plain_text_content = (
+            render_to_string(template_name.replace(".html", ".txt"), context)
+            if template_name.endswith(".html")
+            else None
+        )
+
         send_mail(
             subject=subject,
-            message=message,
+            message=plain_text_content or "",
             from_email=None,
             recipient_list=[to_email],
             fail_silently=False,
+            html_message=html_content,
         )
         logger.info(f"Email sent succesfully to {to_email}")
         return f"Email sent to {to_email}"

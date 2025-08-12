@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
 from django.utils.translation import gettext_lazy as _
 import uuid
 from cloudinary.models import CloudinaryField
+from decimal import Decimal
 
 
 class CustomerManager(BaseUserManager):
@@ -68,14 +69,16 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
 def product_directory_path(instance, filename):
     """
-    Returns path to product image directory
+    Returns path to product image directory using UUID
+    if the instance.id is not yet set
     """
-    return f"products/{instance.id}/{filename}"
+    product_id = instance.id or uuid.uuid4
+    return f"products/{product_id}/{filename}"
 
 
 class Product(models.Model):
     """
-    product model
+    Product model
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -85,17 +88,20 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to="photos/products/", blank=True, null=True)
+    image = models.ImageField(upload_to=product_directory_path, blank=True, null=True)
     # image = CloudinaryField("image", blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True)
     tags = models.CharField(max_length=100, blank=True, null=True)
-    rating = models.DecimalField(
-        max_digits=3, decimal_places=2, default=0.0, blank=True, null=True
-    )
+    # rating = models.DecimalField(
+    #     max_digits=3, decimal_places=2, default=0.0, blank=True, null=True
+    # )
     discount = models.DecimalField(
         max_digits=5, decimal_places=2, default=0.0, blank=True, null=True
     )
     is_featured = models.BooleanField(default=False)
+    average_rating = models.DecimalField(
+        max_digits=3, decimal_places=2, default=Decimal("0.00"), blank=True, null=True
+    )
 
     class Meta:
         indexes = [
@@ -111,8 +117,30 @@ class Product(models.Model):
         """
         return self.stock > 0
 
+    # @property
+    # def average_rating(self):
+    #     """Calculate average product rating from reviews"""
+    #     avg = self.reviews.aggregate(models.Avg("rating")["rating__avg"])
+    #     return round(avg or 0, 2) if avg else "No reviews yet"
+
     def __str__(self):
         return self.name
+
+
+class Inventory(models.Model):
+    """
+    Record of stock added to products
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(
+        Product, related_name="inventory_logs", on_delete=models.CASCADE
+    )
+    quantity_added = models.PositiveIntegerField()
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Add {self.quantity_added} to {self.product.name} on {self.added_at}"
 
 
 class Cart(models.Model):
@@ -173,6 +201,13 @@ class Order(models.Model):
     billing_address = models.CharField(max_length=255, blank=True, null=True)
     tracking_number = models.CharField(max_length=100, blank=True, null=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["-order_date"], name="order_date_index"),
+            models.Index(fields=["status"], name="order_status_index"),
+        ]
+        ordering = ["-order_date"]
+
     def __str__(self):
         return f"Order {self.id} - {self.customer.email} - {self.status}"
 
@@ -183,9 +218,6 @@ class Order(models.Model):
         * quantity for each related CartItem.
         """
         return sum(item.quantity * item.product.price for item in self.items.all())
-        # return total
-        #     for item in self.cartitem_set.all()
-        # )
 
 
 class OrderItem(models.Model):
@@ -195,11 +227,13 @@ class OrderItem(models.Model):
 
     # cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="items")
-    quantity = models.PositiveIntegerField(default=1)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="order_items"
+    )
+    quantity = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.product.name} - {self.order.id} - {self.quantity}"
+        return f" {self.quantity} x {self.product.name}"
 
 
 class CartItem(models.Model):
@@ -227,9 +261,17 @@ class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
-    rating = models.PositiveIntegerField(default=0)
+    rating = models.PositiveSmallIntegerField()
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        """To avoid duplicate reviews"""
+
+        unique_together = ("product", "customer")
+
+    def __str__(self):
+        return f"{self.customer}-{self.product.name} - ({self.rating})"
 
 
 class PaymentStatus(models.TextChoices):
@@ -247,6 +289,7 @@ class Payment(models.Model):
     Model for payments
     """
 
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     payment_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     order = models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name="payments", null=True, blank=True

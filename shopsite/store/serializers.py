@@ -63,18 +63,27 @@ class RegisterSerializer(serializers.ModelSerializer):
             "confirm_password",
             "token",
         ]
+        extra_kwargs = {
+            "email": {"write_only": True},
+            "first_name": {"write_only": True},
+            "last_name": {"write_only": True},
+            "phone_number": {"write_only": True},
+            "date_of_birth": {"write_only": True},
+        }
 
     def create(self, validated_data):
         """
         Create a new customer instance
         """
+        validated_data.pop("confirm_password", None)
         user = Customer.objects.create_user(
-            email=validated_data.get("email", ""),
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
-            phone_number=validated_data.get("phone_number", ""),
-            date_of_birth=validated_data.get("date_of_birth", ""),
-            password=validated_data.get("password", ""),
+            **validated_data
+            #     email=validated_data.get("email", ""),
+            #     first_name=validated_data.get("first_name", ""),
+            #     last_name=validated_data.get("last_name", ""),
+            #     phone_number=validated_data.get("phone_number", ""),
+            #     date_of_birth=validated_data.get("date_of_birth", ""),
+            #     password=validated_data.get("password", ""),
         )
         return user
 
@@ -104,6 +113,44 @@ class RegisterSerializer(serializers.ModelSerializer):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+
+
+# class ConfirmEmailSerializer(serializers.Serializer):
+#     """
+#     Serializer for email confirmation
+#     """
+
+#     uid = serializers.CharField()
+#     token = serializers.CharField()
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for forgot password request
+    """
+
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        from .models import Customer
+
+        if not Customer.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist")
+        return value
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password reset
+    """
+
+    password = serializers.CharField(write_only=True, min_length=8)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        if attrs.get("password") != attrs.get("confirm_password"):
+            raise serializers.ValidationError("Passwords do not match")
+        return attrs
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -285,16 +332,19 @@ class PaymentSerializer(serializers.ModelSerializer):
             "payment_status": {"required": True},
         }
 
+
 class CheckoutRequestSerializer(serializers.Serializer):
     """
     Serializer for incoming checkout request
     """
+
     # cart_id = serializers.UUIDField(required=True)
     # payment_method = serializers.ChoiceField(
     #     choices=["credit_card", "paypal", "mpesa"], required=True
     # )
     shipping_address = serializers.CharField(required=True)
     billing_address = serializers.CharField(required=True)
+
 
 # class CheckoutResponseSerializer(serializers.Serializer):
 #     """
@@ -303,16 +353,20 @@ class CheckoutRequestSerializer(serializers.Serializer):
 #     message = serializers.CharField()
 #     order_id = serializers.UUIDField()
 
+
 class PayRequestSerializer(serializers.Serializer):
     """
     serializer for initiating a payment request
     """
+
     order_id = serializers.IntegerField(required=False)
+
 
 class PayResponseSerializer(serializers.Serializer):
     """
     serializer for Paystack payment Response
     """
+
     status = serializers.CharField()
     message = serializers.CharField()
     data = serializers.JSONField()

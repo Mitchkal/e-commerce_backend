@@ -161,7 +161,7 @@ class Command(BaseCommand):
                 "stock": stock,
                 "category": category,
                 "tags": tags,
-                "rating": Decimal("0.00"),  # Default rating
+                "average_rating": Decimal("0.00"),  # Default rating
                 "discount": round(Decimal(str(discount)), 2),
                 "is_featured": is_featured,
             }

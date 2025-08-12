@@ -2,6 +2,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
+    ConfirmEmailView,
     CustomerAdminViewset,
     CustomerProfileViewset,
     SignupViewset,
@@ -15,6 +16,8 @@ from .views import (
     CheckoutView,
     PayView,
     PaymentViewset,
+    ForgotPasswordView,
+    ResetPasswordView,
 )
 from .webhook import paystack_webhook
 
@@ -41,6 +44,22 @@ urlpatterns = [
     ),
     path("checkout/", CheckoutView.as_view(), name="checkout"),
     path("pay/", PayView.as_view(), name="pay"),
+    path("forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
+    path(
+        "reset-password/<str:uuid64>/<str:token>/",
+        ResetPasswordView.as_view(),
+        name="reset-password",
+    ),
+    path(
+        "api/confirm-email/<str:uuidb64>/<str:token>/",
+        ConfirmEmailView.as_view(),
+        name="confirm-email",
+    ),
+    # path(
+    #     "reset-password/<uid>/<token>/",
+    #     views.password_reset_form,
+    #     name="password_reset_form",
+    # ),
     # path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     # path(
     #     "register/", RegisterViewset.as_view({"post", "create"}), name="register-create"

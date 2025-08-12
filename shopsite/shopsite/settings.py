@@ -14,6 +14,10 @@ from pathlib import Path
 from datetime import timedelta
 import load_dotenv
 import os
+import socket
+
+IS_DOCKER = os.environ.get("RUNNING_IN_DOCKER") == "true"
+MODE = os.getenv("MODE", "development").lower()
 
 # Load environment variables from .env
 load_dotenv.load_dotenv()
@@ -29,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = "django-insecure-4wbltak6^3l3gz!^uyov6z3-z+=uig&^arr-b==l4c-673#=$d"
 SECRET_KEY = os.getenv("DJANGO_SECRET")
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
-
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:8001")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -58,6 +62,7 @@ INSTALLED_APPS = [
     "django_redis",
     "cloudinary",
     "cloudinary_storage",
+    "django_extensions",
 ]
 
 REST_FRAMEWORK = {
@@ -144,7 +149,8 @@ WSGI_APPLICATION = "shopsite.wsgi.application"
 
 # MEDIA_ROOT = BASE_DIR / "media"
 
-
+# for celery
+SECRET_KEY = os.getenv("DJANGO_SECRET")
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -154,7 +160,7 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": "db" if IS_DOCKER else "localhost",
         "PORT": "5432",
     }
 }
@@ -177,7 +183,11 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+if os.getenv("RUNNING_IN_DOCKER") == "true":
+    REDIS_HOST = "redis"
+else:
+    REDIS_HOST = "localhost"
+
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 
 
@@ -197,11 +207,16 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "dumberd638@gmail.com")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv(
+    "CELERY_RESULT_BACKEND", f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+)
+
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 
 # Internationalization
@@ -216,7 +231,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -232,6 +247,43 @@ CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
     "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "store": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "store.emails": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
 }
 
 # Default primary key field type

@@ -7,11 +7,12 @@ import logging
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, GenericAPIView
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
@@ -21,12 +22,13 @@ from .utility import initiate_payment
 from django.core.cache import cache
 from .emails.tasks import send_email_task
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import force_bytes
 
 from django.utils.decorators import method_decorator
-from django.utils.http import urlencode
+from django.utils.http import urlencode, urlsafe_base64_encode, urlsafe_base64_decode
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 
 from .models import (
@@ -42,18 +44,20 @@ from .models import (
 )
 from .serializers import (
     CheckoutRequestSerializer,
+    # ConfirmEmailSerializer,
     CustomerSerializer,
+    ForgotPasswordSerializer,
     PayRequestSerializer,
     RegisterSerializer,
     ProductSerializer,
     OrderSerializer,
     CartSerializer,
     CartItemSerializer,
+    ResetPasswordSerializer,
     ReviewSerializer,
     PaymentSerializer,
     OrderItemSerializer,
     PayResponseSerializer,
-
 )
 
 
@@ -79,7 +83,7 @@ class CustomerAdminViewset(viewsets.ModelViewSet):
     customer management
     """
 
-    queryset = Customer.objects.all().order_by('id')
+    queryset = Customer.objects.all().order_by("id")
     serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 
@@ -100,19 +104,25 @@ class SignupViewset(CreateAPIView):
         """
         Handle customer signup
         """
-        customer = serializer.save()
+        customer = serializer.save(is_active=False)
         user = customer
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        confirm_link = f"{settings.FRONTEND_URL}/api/confirm-email/{uid}/{token}/"
 
         try:
             send_email_task.delay(
-                subject="Welcome to our store!",
-                template_name="emails/welcome.html",
-                context={"user": user.first_name},
+                subject="Confirm your email",
+                template_name="emails/confirm_email.html",
+                context={"user": user.first_name, "confirm_link": confirm_link},
                 to_email=user.email,
             )
         except Exception as e:
-            logger.error(f"Failed to send welcome email: {str(e)}")
+            logger.error(f"Failed to send confirmation email: {str(e)}")
 
+        print(confirm_link)
         return Response(
             {
                 "message": "User created",
@@ -125,6 +135,126 @@ class SignupViewset(CreateAPIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ConfirmEmailView(APIView):
+    """
+    confirms user email
+    """
+
+    # serializer_class = ConfirmEmailSerializer
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("uuidb64", str, "Base64 encoded user ID"),
+            OpenApiParameter("token", str, "Email confirmation token"),
+        ],
+        responses={
+            200: OpenApiResponse(description="Email confirmed successfully"),
+            400: OpenApiResponse(description="Invalid token or user does not exist"),
+        },
+    )
+    def get(self, request, uuidb64, token):
+
+        # serializer = self.serializer_class(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+
+        # uid = serializer.validated_data.get("uuidb64")
+        # token = serializer.validated_data.get("token")
+
+        try:
+            uid = urlsafe_base64_decode(uuidb64).decode()
+            user = Customer.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Customer.DoesNotExist):
+            return Response(
+                {"error": "Invalid token or user does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"error": "Invalid or expired token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_active = True
+        user.save()
+        return Response(
+            {"message": "Email confirmed successfully, You can now log in"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ForgotPasswordView(GenericAPIView):
+    """
+    sends passord reset token to user email
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = ForgotPasswordSerializer
+
+    def get(self, request, *args, **kwargs):
+        return Response(self.get_serializer().data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        user = Customer.objects.get(email=email)
+
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        reset_link = f"{settings.FRONTEND_URL}/api/reset-password/{uid}/{token}"
+
+        send_email_task.delay(
+            subject="Password Reset",
+            template_name="emails/password_reset.html",
+            to_email=user.email,
+            context={"reset_link": reset_link, "user": user.first_name},
+        )
+        print(reset_link)
+        return Response({"message": "Password reset link sent."})
+
+
+class ResetPasswordView(APIView):
+    """
+    Accepts token and new passord to allow
+    users update their password
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, uuid64, token):
+        """
+        Accepts token and new password
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            uid = urlsafe_base64_decode(uuid64, token)
+            user = Customer.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Customer.DoesNotExist):
+            return Response(
+                {"error": "Invalid token or user does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"error": "Invalid token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        new_password = serializer.validated_data.get("password")
+        if not new_password:
+            return Response(
+                {"error": "Password required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password updated successfully"})
 
 
 class CustomerProfileViewset(RetrieveUpdateAPIView):
@@ -172,7 +302,6 @@ class CustomerProfileViewset(RetrieveUpdateAPIView):
         return response
 
 
-
 class ProductViewset(viewsets.ModelViewSet):
     """
     Viewset for Product Model CRUD operations
@@ -205,7 +334,6 @@ class ProductViewset(viewsets.ModelViewSet):
                 )
             )
         )
-
 
     def list(self, request, *args, **kwargs):
         """
@@ -286,7 +414,7 @@ class ProductViewset(viewsets.ModelViewSet):
         Removes a product from the cart
         """
         product = self.get_object()
-        cart = Cart.objects.get(user=request.user)
+        cart = Cart.objects.get(customer=request.user)
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()
         if cart_item:
             cart_item.delete()
@@ -317,8 +445,6 @@ class CartViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Cart.objects.filter(customer=user)
 
- 
-
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def me(self, request):
         """
@@ -331,7 +457,7 @@ class CartViewSet(viewsets.ModelViewSet):
 
 class CartItemViewset(viewsets.ModelViewSet):
     """
-    Viewset for crud operations on items in 
+    Viewset for crud operations on items in
     a customer's cart.
     """
 
@@ -351,13 +477,14 @@ class CartItemViewset(viewsets.ModelViewSet):
             return CartItem.objects.filter(cart=cart)
         return CartItem.objects.none()
 
+
 @extend_schema(
     request=CheckoutRequestSerializer,
-    responses={201: OrderSerializer, 400: dict, 404: dict}
+    responses={201: OrderSerializer, 400: dict, 404: dict},
 )
 class CheckoutView(GenericAPIView):
     """
-    Viewset to handle checkout operations. 
+    Viewset to handle checkout operations.
     Allows authenticated users to create an
     order from their cart, then clears the cart.
     """
@@ -365,7 +492,6 @@ class CheckoutView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CheckoutRequestSerializer
     response_serializer_class = OrderSerializer
-    
 
     @transaction.atomic
     def post(self, request):
@@ -519,8 +645,7 @@ class OrderViewset(viewsets.ModelViewSet):
 
 
 @extend_schema(
-    request=PayRequestSerializer,
-    responses={200: PayResponseSerializer, 404: dict}
+    request=PayRequestSerializer, responses={200: PayResponseSerializer, 404: dict}
 )
 class PayView(GenericAPIView):
     """
@@ -577,8 +702,18 @@ class ReviewViewset(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """
-        Save a review with the authenticated user as author
+        Save a review with the authenticated user as author.
+        Allow review creation only if a customer has a paid order.
         """
+        user = self.request.user
+        if not user.is_authenticated:
+            raise PermissionError("You must be logged in to leave a review")
+        user_order = Order.objects.filter(
+            customer=user, status=OrderStatus.COMPLETED
+        ).first()
+        if not user_order:
+            raise PermissionError("You must have a completed order to leave a review")
+
         serializer.save(author=self.request.user)
 
     def get_queryset(self):
@@ -624,7 +759,7 @@ class PaymentViewset(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         if user.is_staff:
             return Payment.objects.all()
-        return Payment.objects.filter(customer=user.customer)
+        return Payment.objects.filter(customer=user)
 
 
 # class PaymentViewset(viewsets.ModelViewSet):

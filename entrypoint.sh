@@ -19,9 +19,6 @@ if [[ "$1" == "gunicorn" ]]; then
     echo "Seeding the database..."
     python manage.py seed_products --csv-path Divi-Engine-WooCommerce-Sample-Products.csv --download-images
 fi
-# Start celery worker
-# echo "starting Celery worker..."
-# celery -A shopsite worker --loglevel=info
 
 # Keep the container running by executing main command
 echo "starting service: $@"
