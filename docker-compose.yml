@@ -33,7 +33,7 @@ services:
     restart: always
     ports:
       - '15672:15672'
-      # - '5673:5672'
+      - '5673:5672'
     environment:
       RUNNING_IN_DOCKER: 'true'
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
@@ -46,7 +46,7 @@ services:
   celery_worker:
     build: .
     container_name: celery_worker
-    command: celery -A shopsite worker -loglevel=info
+    command: celery -A shopsite worker --loglevel=INFO
     environment:
       RUNNING_IN_DOCKER: 'true'
       CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
@@ -54,8 +54,14 @@ services:
       - rabbitmq
     networks:
       - shop-network
-    ports:
-      - '5672:5672'
+    env_file:
+      - .env
+    volumes:
+      - ./shopsite/store/templates:/app/store/templates
+    # ports:
+    #   - '5672:5672'
+    extra_hosts:
+      host.docker.internal: host-gateway
   flower:
     image: mher/flower
     container_name: flower
@@ -70,7 +76,8 @@ services:
       - celery_worker
     networks:
       - shop-network
-
+    extra_hosts:
+      host.docker.internal: host-gateway
 volumes:
   db_data:
   redis_data:
