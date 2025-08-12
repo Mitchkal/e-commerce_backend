@@ -15,6 +15,8 @@ from .views import (
     CheckoutView,
     PayView,
     PaymentViewset,
+    ForgotPasswordView,
+    ResetPasswordView,
 )
 from .webhook import paystack_webhook
 
@@ -41,6 +43,17 @@ urlpatterns = [
     ),
     path("checkout/", CheckoutView.as_view(), name="checkout"),
     path("pay/", PayView.as_view(), name="pay"),
+    path("forgot-password/", ForgotPasswordView.as_view(), name="forgot-password"),
+    path(
+        "reset-password/<uuid64>/<token>/",
+        ResetPasswordView.as_view(),
+        name="reset-password",
+    ),
+    # path(
+    #     "reset-password/<uid>/<token>/",
+    #     views.password_reset_form,
+    #     name="password_reset_form",
+    # ),
     # path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     # path(
     #     "register/", RegisterViewset.as_view({"post", "create"}), name="register-create"

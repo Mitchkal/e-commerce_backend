@@ -17,6 +17,7 @@ import os
 import socket
 
 IS_DOCKER = os.environ.get("RUNNING_IN_DOCKER") == "true"
+MODE = os.getenv("MODE", "development").lower()
 
 # Load environment variables from .env
 load_dotenv.load_dotenv()
@@ -32,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = "django-insecure-4wbltak6^3l3gz!^uyov6z3-z+=uig&^arr-b==l4c-673#=$d"
 SECRET_KEY = os.getenv("DJANGO_SECRET")
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
-
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:8001")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -181,7 +182,11 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-REDIS_HOST = os.getenv("REDIS_HOST", "redis") if IS_DOCKER else "localhost"
+if os.getenv("RUNNING_IN_DOCKER") == "true":
+    REDIS_HOST = "redis"
+else:
+    REDIS_HOST = "localhost"
+
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 
 
@@ -204,8 +209,13 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv(
+    "CELERY_RESULT_BACKEND", f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+)
+
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 
 # Internationalization
@@ -220,7 +230,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

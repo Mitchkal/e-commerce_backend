@@ -7,11 +7,12 @@ import logging
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, GenericAPIView
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
@@ -21,9 +22,10 @@ from .utility import initiate_payment
 from django.core.cache import cache
 from .emails.tasks import send_email_task
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import force_bytes
 
 from django.utils.decorators import method_decorator
-from django.utils.http import urlencode
+from django.utils.http import urlencode, urlsafe_base64_encode, urlsafe_base64_decode
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
 from drf_spectacular.utils import extend_schema
@@ -43,6 +45,7 @@ from .models import (
 from .serializers import (
     CheckoutRequestSerializer,
     CustomerSerializer,
+    ForgotPasswordSerializer,
     PayRequestSerializer,
     RegisterSerializer,
     ProductSerializer,
@@ -124,6 +127,73 @@ class SignupViewset(CreateAPIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class ForgotPasswordView(GenericAPIView):
+    """
+    sends passord reset token to user email
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = ForgotPasswordSerializer
+
+    def get(self, request, *args, **kwargs):
+        return Response(self.get_serializer().data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        user = Customer.objects.get(email=email)
+
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        reset_link = f"{settings.FRONTEND_URL}/api/reset-password/{uid}/{token}"
+
+        send_email_task.delay(
+            subject="Password Reset",
+            template_name="emails/password_reset.html",
+            to_email=user.email,
+            context={"reset_link": reset_link, "user": user.first_name},
+        )
+        print(reset_link)
+        return Response({"message": "Password reset link sent."})
+
+
+class ResetPasswordView(APIView):
+    """
+    Accepts token and new passord to allow
+    users update their password
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request, uuid64, token):
+        """
+        Accepts token and new password
+        """
+        try:
+            uid = urlsafe_base64_decode(uuid64, token)
+            user = Customer.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, Customer.DoesNotExist):
+            return Response(
+                {"error": "Invalid token or user does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"error": "Invalid token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        new_password = request.data.get("password")
+        if not new_password:
+            return Response(
+                {"error": "Password required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password updated successfully"})
 
 
 class CustomerProfileViewset(RetrieveUpdateAPIView):
