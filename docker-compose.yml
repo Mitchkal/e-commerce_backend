@@ -1,48 +1,16 @@
 services:
-  web:
-    build: .
-    entrypoint: ['./entrypoint.sh']
-    command: ['gunicorn', '--bind', ':8000', 'shopsite.wsgi:application']
-    volumes:
-      - ./shopsite:/app
-      - media_volume:/app/media/
-      - ./Divi-Engine-WooCommerce-Sample-Products.csv:/app/Divi-Engine-WooCommerce-Sample-Products.csv
-    ports:
-      - '8000:8000'
-    depends_on:
-      - db
-      - redis
-      - rabbitmq
-    env_file:
-      - .env
-    networks:
-      - shop-network
-
   db:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      RUNNING_IN_DOCKER: 'true'
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
     ports:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/db_data
-    networks:
-      - shop-network
-  celery-worker:
-    build: .
-    entrypoint: ['./entrypoint.sh']
-    command: ['celery', '-A', 'shopsite', 'worker', '--loglevel=info']
-    volumes:
-      - ./shopsite:/app
-    depends_on:
-      - db
-      - redis
-      - rabbitmq
-    env_file:
-      - .env
     networks:
       - shop-network
 
@@ -54,7 +22,8 @@ services:
     volumes:
       - redis_data:/db_data
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      RUNNING_IN_DOCKER: 'true'
+      REDIS_PASSWORD:
     networks:
       - shop-network
 
@@ -64,21 +33,47 @@ services:
     restart: always
     ports:
       - '15672:15672'
-      - '5672:5672'
+      # - '5673:5672'
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_DEFAULT_VHOST: /
-
+      RUNNING_IN_DOCKER: 'true'
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - shop-network
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    command: celery -A shopsite worker -loglevel=info
+    environment:
+      RUNNING_IN_DOCKER: 'true'
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+    networks:
+      - shop-network
+    ports:
+      - '5672:5672'
+  flower:
+    image: mher/flower
+    container_name: flower
+    command: celery flower --broker=amqp://guest:guest@rabbitmq:5672//
+    ports:
+      - '5555:5555'
+    environment:
+      RUNNING_IN_DOCKER: 'true'
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+      - celery_worker
     networks:
       - shop-network
 
 volumes:
   db_data:
   redis_data:
-  media_volume:
   rabbitmq_data:
 
 networks:
