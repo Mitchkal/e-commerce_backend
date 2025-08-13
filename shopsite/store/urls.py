@@ -18,8 +18,9 @@ from .views import (
     PaymentViewset,
     ForgotPasswordView,
     ResetPasswordView,
+    LogoutView,
 )
-from .webhook import paystack_webhook
+from .webhook import PaystackWebhookView
 
 
 router = DefaultRouter()
@@ -35,7 +36,7 @@ router.register(r"payment", PaymentViewset, basename="payment")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("webhook/paystack/", paystack_webhook, name="paystack-webhook"),
+    path("webhook/paystack/", PaystackWebhookView.as_view(), name="paystack-webhook"),
     path("signup/", SignupViewset.as_view(), name="signup"),
     path(
         "customer_profile/me/",
@@ -55,6 +56,7 @@ urlpatterns = [
         ConfirmEmailView.as_view(),
         name="confirm-email",
     ),
+    path("logout/", LogoutView.as_view(), name="logout")
     # path(
     #     "reset-password/<uid>/<token>/",
     #     views.password_reset_form,

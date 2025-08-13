@@ -21,7 +21,9 @@ cryptography==45.0.6
 daphne==4.2.1
 Django==5.2.4
 django-cloudinary-storage==0.3.0
+django-extensions==4.1
 django-filter==25.1
+django-ipware==7.0.1
 django-phonenumber-field==8.1.0
 django-redis==6.0.0
 django-rest-framework==0.1.0
@@ -55,6 +57,7 @@ PyJWT==2.10.1
 pyOpenSSL==25.1.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
+python-ipware==3.0.0
 PyYAML==6.0.2
 redis==5.2.1
 referencing==0.36.2

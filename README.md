@@ -112,6 +112,7 @@ A robust Django REST API backend for an e-commerce platform, supporting comprehe
    ```bash
    python manage.py migrate
    python manage.py createsuperuser
+   python manage.py seed_products
    ```
 
 5. **Start services:**
@@ -119,19 +120,13 @@ A robust Django REST API backend for an e-commerce platform, supporting comprehe
    ```bash
    # Start Django server
    python manage.py runserver
-
-   # Start Celery worker (separate terminal)
-   celery -A shopsite worker -l info
-
-   # Start Redis server
-   redis-server
    ```
 
 ### Docker Setup (Alternative)
 
 ```bash
 # Build and start all services
-docker-compose build
+# docker-compose build
 docker-compose up -d
 ```
 

@@ -1,0 +1,13 @@
+INFO 2025-08-13 12:01:14,137 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger/
+INFO 2025-08-13 12:01:14,937 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
+INFO 2025-08-13 13:14:07,626 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger/
+INFO 2025-08-13 13:14:08,565 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
+INFO 2025-08-13 13:14:13,041 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger
+INFO 2025-08-13 13:14:13,103 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger/
+INFO 2025-08-13 13:14:13,309 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
+INFO 2025-08-13 13:15:12,832 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger/
+INFO 2025-08-13 13:15:13,044 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
+INFO 2025-08-13 13:18:23,330 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /docs/swagger/
+INFO 2025-08-13 13:18:23,903 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
+INFO 2025-08-13 13:18:38,568 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/webhook/paystack/
+INFO 2025-08-13 13:18:47,870 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/webhook/paystack/

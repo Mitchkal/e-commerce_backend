@@ -11,9 +11,10 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.tokens import OutstandingToken, BlacklistedToken
 from .filters import ProductFilter
 from django.db.models import Case, When, BooleanField, Value, IntegerField
 from .permissions import IsStaffOrReadOnly
@@ -22,7 +23,7 @@ from .utility import initiate_payment
 from django.core.cache import cache
 from .emails.tasks import send_email_task
 from django.shortcuts import get_object_or_404
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_str
 
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode, urlsafe_base64_encode, urlsafe_base64_decode
@@ -65,16 +66,16 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-    """
-    temporariliy exempt csrf in dev mode
-    """
+# class CsrfExemptSessionAuthentication(SessionAuthentication):
+#     """
+#     temporariliy exempt csrf in dev mode
+#     """
 
-    def enforce_csrf(self, request):
-        """
-        Override to disable csrf check
-        """
-        return
+#     def enforce_csrf(self, request):
+#         """
+#         Override to disable csrf check
+#         """
+#         return
 
 
 class CustomerAdminViewset(viewsets.ModelViewSet):
@@ -129,14 +130,50 @@ class SignupViewset(CreateAPIView):
                 "user": {
                     "id": user.id,
                     "email": user.email,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
+                    # "first_name": user.first_name,
+                    # "last_name": user.last_name,
                 },
             },
             status=status.HTTP_201_CREATED,
         )
 
 
+class LogoutView(APIView):
+    """
+    Logs out the user
+    """
+
+    @extend_schema(
+        description="logs out a currently authenticated user BY blaclisting JWT token",
+        request=None,
+        responses={
+            200: OpenApiResponse(
+                description="Succesfully logged out",
+                response={"type": "object", "properties": {"message": {"type": "string"}}}
+            ),
+            400: OpenApiResponse(
+                description="Bad request, user not authenitcated",
+                response={"type": "object", "properties": {"error": {"type": "string"}}}
+            ),
+        },
+    )
+    def post(self, request, format=None):
+        """
+        Logs out a user by blacklisting all their tokens
+        """
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "User not authenticated"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+      
+        tokens = OutstandingToken.objects.filter(user_id=request.user.id)
+        for token in tokens:
+            BlacklistedToken.objects.create(token=token)
+        
+        return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+       
+    
 class ConfirmEmailView(APIView):
     """
     confirms user email
@@ -235,7 +272,7 @@ class ResetPasswordView(APIView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            uid = urlsafe_base64_decode(uuid64, token)
+            uid = force_str(urlsafe_base64_decode(uuid64))
             user = Customer.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, Customer.DoesNotExist):
             return Response(

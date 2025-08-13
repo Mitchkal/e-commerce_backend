@@ -116,6 +116,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "store.middleware.jwtmiddleware.JWTBlacklistMiddleware",
+    "store.middleware.iploggingmiddleware.IPLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "shopsite.urls"
@@ -267,6 +269,16 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        "ip_file": {
+            "class": "logging.FileHandler",
+            "filename": "ip_logging.log",
+            "formatter": "verbose",
+        },
+        "throttle_file": {
+            "class": "logging.FileHandler",
+            "filename": "throttle_logging.log",
+            "formatter": "verbose"
+        }
     },
     "loggers": {
         "django": {
@@ -282,6 +294,16 @@ LOGGING = {
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": True,
+        },
+        "ip_logger": {
+            "handlers": ["ip_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "throttle_logger": {
+            "handlers": ["throttle_file"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
