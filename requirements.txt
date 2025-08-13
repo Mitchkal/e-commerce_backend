@@ -15,8 +15,6 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 cloudinary==1.44.1
 constantly==23.10.4
-coreapi==2.3.3
-coreschema==0.0.4
 cryptography==45.0.6
 daphne==4.2.1
 Django==5.2.4
@@ -32,6 +30,7 @@ djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.1
 drf-spectacular==0.28.0
 drf-spectacular-sidecar==2025.8.1
+graphviz==0.21
 gunicorn==23.0.0
 hyperlink==21.0.0
 idna==3.10
