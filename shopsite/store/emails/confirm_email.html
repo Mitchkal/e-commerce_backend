@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Confirm Your Email</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; color: #333;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #2c3e50;">Hello, {{ user }}!</h2>
+        <p>Thank you for signing up at servostore.</p>
+        <p>To activate your account, please confirm your email by clicking the button below:</p>
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{ confirm_link }}"
+                style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Confirm Email
+            </a>
+        </p>
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p style="word-break: break-all;"><a href="{{ confirm_link }}">{{ confirm_link }}</a></p>
+        <p style="margin-top: 30px;">
+            Welcome aboard! 🎉<br />
+            <strong>The ServoStore Team</strong>
+        </p>
+    </div>
+</body>
+</html>

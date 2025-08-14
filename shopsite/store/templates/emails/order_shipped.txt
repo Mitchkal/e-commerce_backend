@@ -1,0 +1,12 @@
+Your Order Has Shipped!
+
+Hi {{ customer.name }},
+
+We’re excited to let you know that your order #{{ order.id }} has been shipped and is on its way to you.
+
+You can expect delivery soon. Thank you for shopping with us!
+
+Track your order: {{ order.tracking_url }}
+
+© {{ now|date:"Y" }} Store Name. All rights reserved.
+ 

@@ -49,7 +49,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         validators=[validate_password],
     )
-    token = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
@@ -61,7 +60,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             "date_of_birth",
             "password",
             "confirm_password",
-            "token",
         ]
         extra_kwargs = {
             "email": {"write_only": True},
@@ -103,16 +101,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         except DjangoValidationError as e:
             raise ValidationError(e.messages)
         return value
-
-    def get_token(self, obj: Customer) -> dict:
-        """
-        Generate JWT token for user
-        """
-        refresh = RefreshToken.for_user(obj)
-        return {
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-        }
 
 
 # class ConfirmEmailSerializer(serializers.Serializer):

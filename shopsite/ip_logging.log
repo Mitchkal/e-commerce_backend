@@ -11,3 +11,494 @@ INFO 2025-08-13 13:18:23,330 ip_logger Incoming request from IP: 127.0.0.1, Rout
 INFO 2025-08-13 13:18:23,903 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/schema/
 INFO 2025-08-13 13:18:38,568 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/webhook/paystack/
 INFO 2025-08-13 13:18:47,870 ip_logger Incoming request from IP: 127.0.0.1, Routable: False to path: /api/webhook/paystack/
+INFO 2025-08-13 14:07:30,511 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 14:07:34,163 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 14:07:42,232 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 14:07:43,941 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/redoc/
+INFO 2025-08-13 14:07:46,206 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 14:12:20,754 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 14:16:27,766 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /favicon.ico
+INFO 2025-08-13 14:16:42,528 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 14:16:43,911 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 14:17:36,786 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 14:19:30,791 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 14:20:54,745 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/d6926ab2-1c03-4193-9923-227b33596dfd/add_to_cart/
+INFO 2025-08-13 15:29:03,854 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 15:29:05,239 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 15:30:04,673 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/3fa85f64-5717-4562-b3fc-2c963f66afa6/add_to_cart/
+INFO 2025-08-13 15:34:15,087 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 15:34:31,812 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 15:34:54,659 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 15:53:50,385 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/3fa85f64-5717-4562-b3fc-2c963f66afa6/add_to_cart/
+INFO 2025-08-13 15:55:19,064 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/token/
+INFO 2025-08-13 15:55:32,821 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/token/
+INFO 2025-08-13 15:56:38,824 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 15:56:39,770 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 16:00:36,533 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 16:01:21,072 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/d6926ab2-1c03-4193-9923-227b33596dfd/add_to_cart/
+INFO 2025-08-13 16:03:21,284 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 16:04:02,728 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 16:09:38,486 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 16:09:48,851 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 17:10:09,745 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 17:10:11,049 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /favicon.ico
+INFO 2025-08-13 17:10:13,330 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 17:10:20,840 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 17:10:57,659 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 17:12:52,439 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/token/
+INFO 2025-08-13 17:13:18,244 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/token/
+INFO 2025-08-13 17:14:40,133 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/d6926ab2-1c03-4193-9923-227b33596dfd/add_to_cart/
+INFO 2025-08-13 17:15:06,137 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/d6926ab2-1c03-4193-9923-227b33596dfd/add_to_cart/
+INFO 2025-08-13 17:15:15,150 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/d6926ab2-1c03-4193-9923-227b33596dfd/add_to_cart/
+INFO 2025-08-13 17:16:07,781 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/67ebbb7c-f562-4f76-bb88-e32d30c1d21a/add_to_cart/
+INFO 2025-08-13 17:16:36,710 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/67ebbb7c-f562-4f76-bb88-e32d30c1d21a/remove_from_cart/
+INFO 2025-08-13 17:18:06,766 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/orders/
+INFO 2025-08-13 17:18:56,086 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/cart/me/
+INFO 2025-08-13 17:19:15,895 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/checkout/
+INFO 2025-08-13 17:19:57,623 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/orders/
+INFO 2025-08-13 17:20:29,174 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/pay/
+INFO 2025-08-13 17:27:40,141 ip_logger Incoming request from IP: 192.64.113.146, Routable: True to path: /
+INFO 2025-08-13 17:27:40,547 ip_logger Incoming request from IP: 192.64.113.146, Routable: True to path: /
+INFO 2025-08-13 17:38:04,470 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 17:38:08,423 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 17:38:08,928 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /favicon.ico
+INFO 2025-08-13 17:38:57,932 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /favicon.ico
+INFO 2025-08-13 17:39:09,921 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 17:46:19,604 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 17:46:21,222 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /favicon.ico
+INFO 2025-08-13 17:46:25,051 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 17:46:27,859 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 17:47:05,114 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 17:47:27,401 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 17:47:41,448 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 17:47:57,743 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/products/
+INFO 2025-08-13 17:48:20,877 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /media/products/d6926ab2-1c03-4193-9923-227b33596dfd/divi_engine_string_bag_big_logo.jpg
+INFO 2025-08-13 17:48:42,936 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /media/products/67ebbb7c-f562-4f76-bb88-e32d30c1d21a/divi_engine_string_bag_small_logos.jpg
+INFO 2025-08-13 17:50:29,719 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 17:50:43,997 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 17:51:13,581 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:15:43,564 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /
+INFO 2025-08-13 18:15:46,464 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 18:15:47,839 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/schema/
+INFO 2025-08-13 18:16:31,047 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:18:54,160 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:19:18,468 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:19:31,827 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:22:27,777 ip_logger Incoming request from IP: 105.163.1.119, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:26:40,579 ip_logger Incoming request from IP: 154.159.252.9, Routable: True to path: /
+INFO 2025-08-13 18:26:51,935 ip_logger Incoming request from IP: 154.159.252.9, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 18:26:54,453 ip_logger Incoming request from IP: 154.159.252.9, Routable: True to path: /api/schema/
+INFO 2025-08-13 18:29:33,322 ip_logger Incoming request from IP: 154.159.252.9, Routable: True to path: /api/products/
+INFO 2025-08-13 18:31:31,763 ip_logger Incoming request from IP: 154.159.252.9, Routable: True to path: /api/confirm-email/NDJkZjZhZWYtNWY4Zi00Y2RlLWIzMzItNWMwZTVhYjY4MGQw/cuhkdg-46ef4960e30fdc6cab384b67e8c7da6c/
+INFO 2025-08-13 18:44:51,786 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/
+INFO 2025-08-13 18:46:03,077 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/signup/
+INFO 2025-08-13 18:47:01,460 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/confirm-email/NDBjM2U5OTQtM2E0NS00YmFiLThhY2YtMTVhMGRkOWY1ZmQ2/cuhlgr-92ba5fe54b2b1093e2941afcc8b6139a/
+INFO 2025-08-13 18:47:03,801 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /favicon.ico
+INFO 2025-08-13 18:47:56,706 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/token/
+INFO 2025-08-13 18:48:54,748 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 18:49:18,343 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/7cb65c43-2e4c-4624-bb9c-926bdf05dcb2/add_to_cart/
+INFO 2025-08-13 18:49:42,611 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/a9629350-b445-4b6c-af56-555f04ef711f/add_to_cart/
+INFO 2025-08-13 18:49:46,394 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/a9629350-b445-4b6c-af56-555f04ef711f/add_to_cart/
+INFO 2025-08-13 18:50:27,360 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/me/
+INFO 2025-08-13 18:50:48,725 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart-items/
+INFO 2025-08-13 18:52:36,286 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart-items/2/
+INFO 2025-08-13 18:52:54,438 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart-items/
+INFO 2025-08-13 18:53:31,490 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 18:53:58,205 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 18:55:21,997 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 18:56:00,907 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/
+INFO 2025-08-13 18:56:35,187 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 18:57:36,411 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/orders/
+INFO 2025-08-13 18:58:15,850 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 18:58:37,394 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 18:59:26,425 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 18:59:43,145 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 19:02:45,190 ip_logger Incoming request from IP: 197.136.9.5, Routable: True to path: /api/confirm-email/NDBjM2U5OTQtM2E0NS00YmFiLThhY2YtMTVhMGRkOWY1ZmQ2/cuhlgr-92ba5fe54b2b1093e2941afcc8b6139a/
+INFO 2025-08-13 19:12:36,348 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 19:12:38,244 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 19:12:46,100 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 19:13:23,706 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/token/
+INFO 2025-08-13 19:13:45,834 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 19:13:59,674 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/orders/
+INFO 2025-08-13 19:14:26,803 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/
+INFO 2025-08-13 19:14:34,762 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/
+INFO 2025-08-13 19:14:54,117 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/me/
+INFO 2025-08-13 19:15:34,756 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/orders/
+INFO 2025-08-13 19:15:41,988 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/orders/
+INFO 2025-08-13 19:15:50,649 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 19:16:32,650 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/customer_profile/me/
+INFO 2025-08-13 19:17:03,483 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/
+INFO 2025-08-13 19:17:28,552 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:17:30,358 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:17:31,531 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:17:32,682 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:17:34,195 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:17:36,465 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 19:18:15,872 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 19:18:30,399 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/orders/
+INFO 2025-08-13 19:18:42,801 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 19:19:30,185 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 19:19:45,753 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/payment/
+INFO 2025-08-13 19:19:56,051 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 19:19:57,075 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 19:20:14,438 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/payment/
+INFO 2025-08-13 20:19:15,663 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:20:33,564 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:25:43,440 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:26:36,971 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:26:40,588 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:27:14,260 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /
+INFO 2025-08-13 20:27:16,982 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:27:17,598 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:27:31,507 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/
+INFO 2025-08-13 20:27:50,261 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /
+INFO 2025-08-13 20:28:10,872 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /favicon.ico
+INFO 2025-08-13 20:28:14,690 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:28:15,844 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:28:41,079 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/
+INFO 2025-08-13 20:30:24,039 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/signup/
+INFO 2025-08-13 20:31:06,256 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/signup/
+INFO 2025-08-13 20:35:21,416 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:35:22,425 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:35:30,859 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /
+INFO 2025-08-13 20:35:42,859 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /favicon.ico
+INFO 2025-08-13 20:35:44,025 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:35:45,294 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:36:11,860 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/
+INFO 2025-08-13 20:37:20,598 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/signup/
+INFO 2025-08-13 20:37:55,936 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/signup/
+INFO 2025-08-13 20:40:22,340 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/confirm-email/ZDM3YmIxMWYtOTkxZC00ODc0LWIwMTgtMWY4ZDAzYzljZjhl/cuhqn8-8dd16c20241036ff277150e8c3a0acb0/
+INFO 2025-08-13 20:41:27,592 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 20:41:36,126 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-13 20:42:00,701 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/41e5ca3a-98e8-43e5-b9ef-8e8f008c9213/add_to_cart/
+INFO 2025-08-13 20:42:37,365 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/products/41e5ca3a-98e8-43e5-b9ef-8e8f008c9213/add_to_cart/
+INFO 2025-08-13 20:43:00,750 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart/me/
+INFO 2025-08-13 20:43:26,115 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/cart-items/
+INFO 2025-08-13 20:43:52,924 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 20:44:10,011 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/checkout/
+INFO 2025-08-13 20:45:01,831 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/pay/
+INFO 2025-08-13 20:46:53,557 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 20:47:24,168 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 20:47:28,139 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 20:51:22,198 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 20:54:31,620 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 20:57:39,794 ip_logger Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 21:00:50,603 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 21:04:02,276 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 21:08:16,037 ip_logger Incoming request from IP: 44.249.166.219, Routable: True to path: /
+INFO 2025-08-13 21:09:25,736 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 21:12:59,386 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /
+INFO 2025-08-13 21:13:02,025 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-13 21:13:03,001 ip_logger Incoming request from IP: 105.163.0.98, Routable: True to path: /api/schema/
+INFO 2025-08-13 21:15:18,129 ip_logger Incoming request from IP: 54.242.177.180, Routable: True to path: /
+INFO 2025-08-13 21:32:09,575 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 21:40:06,239 ip_logger Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 22:21:46,952 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 22:29:42,918 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 23:06:50,566 ip_logger Incoming request from IP: 154.220.164.231, Routable: True to path: /
+INFO 2025-08-13 23:07:00,949 ip_logger Incoming request from IP: 89.104.110.201, Routable: True to path: /favicon.ico
+INFO 2025-08-13 23:07:06,556 ip_logger Incoming request from IP: 154.220.164.231, Routable: True to path: /favicon.ico
+INFO 2025-08-13 23:14:30,964 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 23:22:26,063 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-13 23:45:44,726 ip_logger Incoming request from IP: 45.156.128.126, Routable: True to path: /
+INFO 2025-08-14 00:16:46,941 ip_logger Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 00:22:14,987 ip_logger Incoming request from IP: 45.38.101.11, Routable: True to path: /.env
+INFO 2025-08-14 00:22:16,594 ip_logger Incoming request from IP: 45.38.101.11, Routable: True to path: /
+INFO 2025-08-14 00:31:37,340 ip_logger Incoming request from IP: 45.139.104.199, Routable: True to path: /.git/config
+INFO 2025-08-14 01:28:08,383 ip_logger Incoming request from IP: 20.65.193.168, Routable: True to path: /owa/auth/logon.aspx
+INFO 2025-08-14 01:57:02,943 ip_logger Incoming request from IP: 164.92.120.173, Routable: True to path: /
+INFO 2025-08-14 01:57:04,937 ip_logger Incoming request from IP: 164.92.120.173, Routable: True to path: /favicon.ico
+INFO 2025-08-14 02:55:35,020 ip_logger Incoming request from IP: 185.242.226.98, Routable: True to path: /
+INFO 2025-08-14 04:06:50,231 ip_logger Incoming request from IP: 146.70.116.115, Routable: True to path: /.git/config
+INFO 2025-08-14 05:20:54,403 ip_logger Incoming request from IP: 3.131.215.38, Routable: True to path: /
+INFO 2025-08-14 05:54:45,333 ip_logger Incoming request from IP: 3.131.215.38, Routable: True to path: /
+INFO 2025-08-14 06:07:11,133 ip_logger Incoming request from IP: 140.99.199.104, Routable: True to path: /.env
+INFO 2025-08-14 06:07:11,675 ip_logger Incoming request from IP: 140.99.199.104, Routable: True to path: /
+INFO 2025-08-14 06:09:18,163 ip_logger Incoming request from IP: 188.166.102.250, Routable: True to path: /
+INFO 2025-08-14 06:09:20,990 ip_logger Incoming request from IP: 188.166.102.250, Routable: True to path: /favicon.ico
+INFO 2025-08-14 06:16:43,517 ip_logger Incoming request from IP: 104.234.115.32, Routable: True to path: /
+INFO 2025-08-14 06:39:57,608 ip_logger Incoming request from IP: 198.235.24.13, Routable: True to path: /
+INFO 2025-08-14 06:51:06,399 ip_logger Incoming request from IP: 206.168.34.213, Routable: True to path: /
+INFO 2025-08-14 06:51:25,249 ip_logger Incoming request from IP: 206.168.34.213, Routable: True to path: /favicon.ico
+INFO 2025-08-14 06:52:03,105 ip_logger Incoming request from IP: 104.234.115.32, Routable: True to path: /favicon.ico
+INFO 2025-08-14 06:52:36,072 ip_logger Incoming request from IP: 104.234.115.32, Routable: True to path: /favicon.ico
+INFO 2025-08-14 06:54:47,374 ip_logger Incoming request from IP: 206.168.34.213, Routable: True to path: /favicon.ico
+INFO 2025-08-14 06:55:07,290 ip_logger Incoming request from IP: 206.168.34.213, Routable: True to path: /robots.txt
+INFO 2025-08-14 08:21:05,488 ip_logger Incoming request from IP: 157.143.53.238, Routable: True to path: /
+INFO 2025-08-14 08:21:05,584 ip_logger Incoming request from IP: 157.143.53.238, Routable: True to path: /js/twint_ch.js
+INFO 2025-08-14 08:21:05,677 ip_logger Incoming request from IP: 157.143.53.238, Routable: True to path: /js/lkk_ch.js
+INFO 2025-08-14 08:44:25,646 ip_logger Incoming request from IP: 206.168.34.193, Routable: True to path: /
+INFO 2025-08-14 08:44:29,200 ip_logger Incoming request from IP: 206.168.34.193, Routable: True to path: /favicon.ico
+INFO 2025-08-14 08:45:09,024 ip_logger Incoming request from IP: 206.168.34.193, Routable: True to path: /favicon.ico
+INFO 2025-08-14 08:45:27,692 ip_logger Incoming request from IP: 206.168.34.193, Routable: True to path: /wiki
+INFO 2025-08-14 09:01:17,105 ip_logger Incoming request from IP: 172.202.118.18, Routable: True to path: /actuator/health
+INFO 2025-08-14 09:18:55,346 ip_logger Incoming request from IP: 150.107.202.234, Routable: True to path: /.env
+INFO 2025-08-14 09:18:55,856 ip_logger Incoming request from IP: 150.107.202.234, Routable: True to path: /
+INFO 2025-08-14 09:53:09,374 ip_logger Incoming request from IP: 149.57.180.115, Routable: True to path: /
+INFO 2025-08-14 11:08:55,881 ip_logger Incoming request from IP: 118.89.121.172, Routable: True to path: /
+INFO 2025-08-14 11:19:25,041 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /
+INFO 2025-08-14 11:19:25,410 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /favicon.ico
+INFO 2025-08-14 11:19:37,733 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 11:19:41,736 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:19:42,208 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:19:51,871 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:19:54,027 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:21:57,368 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:22:00,249 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:31:03,997 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:31:04,847 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:39:47,017 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:39:47,841 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 11:47:57,450 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:49:47,196 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 11:49:48,092 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 12:02:14,953 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 12:02:15,811 ip_logger Incoming request from IP: 105.163.158.31, Routable: True to path: /api/schema/
+INFO 2025-08-14 13:11:00,139 ip_logger Incoming request from IP: 20.106.168.113, Routable: True to path: /developmentserver/metadatauploader
+INFO 2025-08-14 15:17:37,232 ip_logger Incoming request from IP: 207.244.219.103, Routable: True to path: /.env
+INFO 2025-08-14 15:17:37,876 ip_logger Incoming request from IP: 207.244.219.103, Routable: True to path: /
+INFO 2025-08-14 15:17:42,126 ip_logger Incoming request from IP: 45.156.128.45, Routable: True to path: /
+INFO 2025-08-14 15:19:49,963 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /hello.world
+INFO 2025-08-14 15:19:51,404 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:51,702 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:51,986 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:52,285 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:53,180 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/phpunit/phpunit/LICENSE/eval-stdin.php
+INFO 2025-08-14 15:19:53,455 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /vendor/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:56,012 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:56,848 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:57,145 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:57,427 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:57,718 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /lib/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:58,500 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /lib/phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:58,782 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /lib/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:59,079 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /lib/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:59,375 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /lib/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:59,680 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /laravel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:19:59,955 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /www/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:00,770 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /ws/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:01,073 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /yii/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:01,874 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /zend/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:02,169 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /ws/ec/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:02,972 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /V2/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:03,770 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /tests/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:04,060 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /test/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:12,532 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /testing/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:12,816 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:13,110 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /demo/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:13,398 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /cms/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:13,699 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /crm/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:14,992 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /admin/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:15,290 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /backup/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:17,598 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /blog/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:18,900 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /workspace/drupal/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:19,195 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /panel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:19,486 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /public/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:21,787 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /apps/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:22,084 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /app/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 15:20:22,872 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /index.php
+INFO 2025-08-14 15:20:23,174 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /public/index.php
+INFO 2025-08-14 15:20:23,475 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /index.php
+INFO 2025-08-14 15:20:23,764 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /index.php
+INFO 2025-08-14 15:20:24,040 ip_logger Incoming request from IP: 47.236.76.100, Routable: True to path: /containers/json
+INFO 2025-08-14 17:33:57,076 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 17:33:57,935 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /favicon.ico
+INFO 2025-08-14 17:34:01,055 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 17:34:02,640 ip_logger Incoming request from IP: 66.249.93.97, Routable: True to path: /
+INFO 2025-08-14 17:34:02,943 ip_logger Incoming request from IP: 192.178.10.2, Routable: True to path: /
+INFO 2025-08-14 17:34:03,415 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:03,995 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:07,453 ip_logger Incoming request from IP: 66.249.93.99, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 17:34:07,709 ip_logger Incoming request from IP: 66.249.93.97, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 17:34:07,883 ip_logger Incoming request from IP: 66.249.93.98, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 17:34:09,214 ip_logger Incoming request from IP: 66.249.93.97, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:09,345 ip_logger Incoming request from IP: 66.249.93.97, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:31,206 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 17:34:32,076 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:32,536 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:36,516 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:34:37,888 ip_logger Incoming request from IP: 66.249.93.99, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:34:38,173 ip_logger Incoming request from IP: 66.249.83.38, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:34:38,187 ip_logger Incoming request from IP: 66.102.8.33, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:34:38,582 ip_logger Incoming request from IP: 66.249.83.37, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:34:39,836 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:35:26,255 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:35:27,125 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:44:33,077 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:44:34,745 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:46:04,901 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:46:07,255 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:52:27,822 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:52:29,160 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 17:54:04,024 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/redoc/
+INFO 2025-08-14 17:54:05,214 ip_logger Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 18:10:06,204 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /hello.world
+INFO 2025-08-14 18:10:07,120 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /
+INFO 2025-08-14 18:10:07,963 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:08,974 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:09,883 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:10,833 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:11,804 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/phpunit/phpunit/LICENSE/eval-stdin.php
+INFO 2025-08-14 18:10:12,561 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /vendor/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:13,385 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:14,189 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:15,044 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:15,747 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:16,454 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /lib/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:17,081 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /lib/phpunit/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:17,762 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /lib/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:18,417 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /lib/phpunit/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:19,137 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /lib/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:19,783 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /laravel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:20,470 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /www/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:21,138 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /ws/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:21,786 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /yii/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:22,411 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /zend/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:23,045 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /ws/ec/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:23,666 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /V2/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:24,303 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /tests/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:25,008 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /test/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:25,653 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /testing/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:26,300 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:26,942 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /demo/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:27,580 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /cms/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:28,156 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /crm/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:28,712 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /admin/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:29,302 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /backup/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:29,962 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /blog/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:30,720 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /workspace/drupal/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:31,497 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /panel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:32,234 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /public/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:33,217 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /apps/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:34,258 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /app/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+INFO 2025-08-14 18:10:35,430 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /index.php
+INFO 2025-08-14 18:10:36,496 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /public/index.php
+INFO 2025-08-14 18:10:37,659 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /index.php
+INFO 2025-08-14 18:10:38,819 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /index.php
+INFO 2025-08-14 18:10:39,811 ip_logger Incoming request from IP: 51.195.2.230, Routable: True to path: /containers/json
+INFO 2025-08-14 18:17:29,472[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:17:35,186[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 18:17:36,546[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 18:18:34,510[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:18:55,388[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/admin/customers/
+INFO 2025-08-14 18:19:57,138[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:23:44,631[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:28:28,363[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:29:58,055[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 18:29:59,294[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 18:30:31,039[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:31:13,870[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/
+INFO 2025-08-14 18:31:14,197[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:31:19,401[PID 86966] ip_logger- Incoming request from IP: 197.155.95.6, Routable: True to path: /admin/
+INFO 2025-08-14 18:31:19,940[PID 86966] ip_logger- Incoming request from IP: 197.155.95.6, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:31:44,914[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:32:04,817[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:34:32,793[PID 86966] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:35:51,219[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /admin/login/
+INFO 2025-08-14 18:36:43,560[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:36:47,880[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /docs/swagger/
+INFO 2025-08-14 18:36:49,210[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/schema/
+INFO 2025-08-14 18:38:03,917[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:38:35,741[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/
+INFO 2025-08-14 18:39:23,209[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:40:00,322[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/cart/
+INFO 2025-08-14 18:40:31,611[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/cart-items/
+INFO 2025-08-14 18:40:55,372[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/
+INFO 2025-08-14 18:43:47,184[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/
+INFO 2025-08-14 18:44:04,405[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/
+INFO 2025-08-14 18:44:50,533[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd
+INFO 2025-08-14 18:44:50,872[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/
+INFO 2025-08-14 18:44:58,199[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:45:05,681[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/
+INFO 2025-08-14 18:47:37,479[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:50:45,204[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:51:05,350[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products
+INFO 2025-08-14 18:51:05,740[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/
+INFO 2025-08-14 18:53:23,826[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /
+INFO 2025-08-14 18:53:39,656[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /products
+INFO 2025-08-14 18:54:00,753[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/
+INFO 2025-08-14 18:54:28,020[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd
+INFO 2025-08-14 18:54:28,422[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/
+INFO 2025-08-14 18:54:57,221[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart
+INFO 2025-08-14 18:54:57,639[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:54:58,832[PID 87168] ip_logger- Incoming request from IP: 94.177.49.242, Routable: True to path: /.env
+INFO 2025-08-14 18:54:59,384[PID 87168] ip_logger- Incoming request from IP: 94.177.49.242, Routable: True to path: /
+INFO 2025-08-14 18:55:14,642[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:55:38,569[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:57:00,686[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 18:57:43,207[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:57:56,090[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:57:59,159[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:58:01,939[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:58:04,339[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:58:06,669[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:58:09,599[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/a2065845-5896-409a-9e38-f2e35557f379/add_to_cart/
+INFO 2025-08-14 18:58:54,863[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/cart/
+INFO 2025-08-14 18:59:05,209[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/cart-items/
+INFO 2025-08-14 19:00:04,409[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/customer_profile/me/
+INFO 2025-08-14 19:00:47,376[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:01:33,698[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/checkout/
+INFO 2025-08-14 19:03:11,894[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:03:52,146[PID 87168] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:04:31,663[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:04:40,153[PID 87168] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:09:06,679[PID 87168] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:12:15,816[PID 87168] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:12:42,838[PID 87647] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/products/119c6b0c-4706-4c15-b341-f1a809b92fcd/add_to_cart/
+INFO 2025-08-14 19:13:13,598[PID 87647] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:13:44,606[PID 87647] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:15:26,785[PID 87647] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:18:10,195[PID 87647] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:18:37,709[PID 87647] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:20:49,633[PID 87727] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:21:07,791[PID 87727] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:21:30,691[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:21:51,467[PID 87727] ip_logger- Incoming request from IP: 52.49.173.169, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:21:57,930[PID 87727] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:24:39,749[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:27:03,939[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:27:49,199[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:30:16,335[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:31:00,438[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:33:30,174[PID 87727] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:36:53,272[PID 87727] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:40:05,430[PID 87727] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:44:59,783[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:45:47,370[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/refresh/
+INFO 2025-08-14 19:46:20,623[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:47:27,336[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:47:49,515[PID 87983] ip_logger- Incoming request from IP: 52.49.173.169, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:48:56,630[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:49:05,127[PID 87983] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:51:17,753[PID 87983] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:54:27,913[PID 88096] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:56:09,487[PID 88124] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 19:56:39,077[PID 88124] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 19:57:31,294[PID 88124] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/
+INFO 2025-08-14 19:57:37,877[PID 88124] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:01:33,601[PID 88171] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:01:57,882[PID 88171] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:05:24,076[PID 88171] ip_logger- Incoming request from IP: 45.82.78.107, Routable: True to path: /
+INFO 2025-08-14 20:08:26,465[PID 88241] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:08:57,999[PID 88241] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:11:07,419[PID 88290] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:11:29,546[PID 88290] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:25:25,482[PID 88316] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:27:19,590[PID 88316] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:27:41,153[PID 88316] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:28:35,929[PID 88316] ip_logger- Incoming request from IP: 123.191.154.193, Routable: True to path: /
+INFO 2025-08-14 20:29:25,355[PID 88316] ip_logger- Incoming request from IP: 159.226.1.184, Routable: True to path: /
+INFO 2025-08-14 20:29:26,092[PID 88316] ip_logger- Incoming request from IP: 123.178.210.24, Routable: True to path: /favicon.ico
+INFO 2025-08-14 20:33:38,031[PID 88514] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:34:21,342[PID 88514] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:35:04,685[PID 88551] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:35:10,053[PID 88551] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:35:33,209[PID 88551] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 20:40:29,202[PID 88608] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 20:41:06,344[PID 88608] ip_logger- Incoming request from IP: 52.214.14.220, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 21:01:56,759[PID 88677] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 21:01:59,904[PID 88677] ip_logger- Incoming request from IP: 44.201.139.85, Routable: True to path: /
+INFO 2025-08-14 21:02:25,543[PID 88677] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/token/refresh/
+INFO 2025-08-14 21:03:30,849[PID 88677] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/pay/
+INFO 2025-08-14 21:03:52,481[PID 88677] ip_logger- Incoming request from IP: 52.31.139.75, Routable: True to path: /api/webhook/paystack/
+INFO 2025-08-14 21:05:03,181[PID 88677] ip_logger- Incoming request from IP: 154.156.41.230, Routable: True to path: /api/orders/

@@ -1,6 +1,7 @@
 import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.conf import settings
 from .models import Payment, PaymentStatus, OrderStatus
@@ -9,15 +10,17 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 import hmac
 import hashlib
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
+from .models import Customer
 
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class PaystackWebhookView(APIView):
     """
     Handles paystack webhook events for processing
     """
+    permission_classes = [permissions.AllowAny]
 
     @extend_schema(
         description="Handles webhook events for payment success or failure",
@@ -87,16 +90,17 @@ class PaystackWebhookView(APIView):
                     result = response.json()
                     if ( result.get("status") and result.get("data", {}).get("status") == "success"):
                         try:
-                            payment, created = Payment.objects.get_or_create(
-                                transaction_id=reference,
-                                defaults={
-                                    "amount": result["data"]["amount"] / 100,
-                                    "currency": result["data"]["currency"],
-                                },
-                            )
+                            customer_data = result["data"]["customer"]
+                            email = customer_data.get("email")
+                            payment = Payment.objects.get(reference=reference)
+                            print(f"customer {email} just paid!")
                             if payment.status != "COMPLETED":
                                 payment.status = PaymentStatus.COMPLETED
+                                payment.transaction_id = result["data"]["id"]
+                                payment.currency = result["data"]["currency"]
+                                payment.amount = result["data"]["amount"] / 100
                                 payment.save()
+                                print(f"Payment updated: {payment}")
                                 if payment.order:
                                     payment.order.status = OrderStatus.CREATED
                                     payment.order.save()

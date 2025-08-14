@@ -117,6 +117,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "store.middleware.jwtmiddleware.JWTBlacklistMiddleware",
+    "store.middleware.inactiveusermiddleware.InactiveUserMiddleware",
     "store.middleware.iploggingmiddleware.IPLoggingMiddleware",
 ]
 
@@ -130,6 +131,15 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    "CONTACT": {
+        "name": "Mitchell Kalenda",
+        "url": "https://www.linkedin.com/in/mitchellkalenda/",
+        "email": "mitchellkalenda@gmail.com",
+    },
+    "LICENSE": {
+        "name": "MIT LIcense",
+        "url": "https://opensource.org/licenses/MIT",
+    },
 }
 
 TEMPLATES = [
@@ -256,7 +266,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {name} {message}",
+            "format": "{levelname} {asctime}[PID {process:d}] {name}- {message}",
             "style": "{",
         },
         "simple": {
@@ -266,6 +276,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
+            "level": "ERROR",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
@@ -278,7 +289,13 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": "throttle_logging.log",
             "formatter": "verbose"
-        }
+        },
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "django-errors.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "django": {
@@ -288,6 +305,11 @@ LOGGING = {
         "store": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["file", "console"],
+            "level": "ERROR",
             "propagate": True,
         },
         "store.emails": {

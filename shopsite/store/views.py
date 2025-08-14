@@ -30,8 +30,7 @@ from django.utils.http import urlencode, urlsafe_base64_encode, urlsafe_base64_d
 from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-
-
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import (
     Customer,
     Product,
@@ -92,9 +91,9 @@ class CustomerAdminViewset(viewsets.ModelViewSet):
 class SignupViewset(CreateAPIView):
     """
     Viewset for customer signup
-    Customer signs up with email and password
-    and receives a welcome email.
-    user is provided with JWT token on succesful signup
+    Customer signs up with email and password then status set to inactive.
+    Cstomer receives an email to confirm their account and on succesfully verifying email, recives a 
+    JWT token
     """
 
     serializer_class = RegisterSerializer
@@ -126,7 +125,7 @@ class SignupViewset(CreateAPIView):
         print(confirm_link)
         return Response(
             {
-                "message": "User created",
+                "message": "User created, check your email for an activation link to confirm your account",
                 "user": {
                     "id": user.id,
                     "email": user.email,
@@ -217,9 +216,16 @@ class ConfirmEmailView(APIView):
 
         user.is_active = True
         user.save()
+        refresh = RefreshToken.for_user(user)
+
         return Response(
-            {"message": "Email confirmed successfully, You can now log in"},
+            {
+                "message": "Email confirmed successfully, You can now log in",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            },
             status=status.HTTP_200_OK,
+    
         )
 
 
@@ -252,7 +258,7 @@ class ForgotPasswordView(GenericAPIView):
             context={"reset_link": reset_link, "user": user.first_name},
         )
         print(reset_link)
-        return Response({"message": "Password reset link sent."})
+        return Response({"message": "Password reset link sent to your email."})
 
 
 class ResetPasswordView(APIView):

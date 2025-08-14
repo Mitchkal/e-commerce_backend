@@ -1,0 +1,12 @@
+Hello, {{ user }}!
+
+Thank you for signing up at ServoStore.
+
+To activate your account, please confirm your email by visiting the following link:
+{{ confirm_link }}
+
+If clicking the link doesn’t work, copy and paste it into your browser.
+
+Welcome aboard! 🎉  
+The ServoStore Team
+
