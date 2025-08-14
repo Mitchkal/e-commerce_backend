@@ -1,0 +1,13 @@
+ Payment Successful
+
+ Dear {{ order.customer.first_name }},
+
+ We have successfully received your payment.
+
+ Order ID: {{ order.id }}
+ Amount Paid: ${{ amount }}
+
+ Thank you for shopping with us! Your order will be processed shortly.
+
+ © {{ now|date:"Y" }} servostore. All rights reserved.
+

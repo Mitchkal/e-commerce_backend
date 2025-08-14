@@ -13,6 +13,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from django.urls import include
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -20,31 +22,38 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def home(request):
     if request.GET.get("status") == "true":
         return HttpResponse("ShopSite API is up!", status=200)
     return render(request, "home.html", {"redoc_url": request.build_absolute_uri("/docs/redoc/"), "swagger_url": request.build_absolute_uri("/docs/swagger/"),})
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
     # API endpoints
     path("api/", include(("store.urls", "store"), namespace="store")),
+
     # Schema endpoints
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/schema/",
+        SpectacularAPIView.as_view(permission_classes=[AllowAny]),
+        name="schema",
+    ),
     path(
         "docs/swagger/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
+        SpectacularSwaggerView.as_view(permission_classes=[AllowAny], url_name="schema"),
         name="swagger-ui",
     ),
     path(
         "docs/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
+        SpectacularRedocView.as_view(permission_classes=[AllowAny], url_name="schema"),
         name="redoc",
     ),
+
     # Home health check
     path("", home, name="home"),
 ]

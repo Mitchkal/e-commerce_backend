@@ -298,6 +298,7 @@ class Payment(models.Model):
         max_digits=10, decimal_places=2, default=0.0, blank=True, null=True
     )
     reference = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    currency = models.CharField(max_length=50, blank=True, null=True)
     status = models.CharField(max_length=50, default=PaymentStatus.PENDING)
     payment_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, blank=True, null=True)

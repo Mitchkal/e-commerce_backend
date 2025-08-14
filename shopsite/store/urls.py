@@ -52,7 +52,7 @@ urlpatterns = [
         name="reset-password",
     ),
     path(
-        "api/confirm-email/<str:uuidb64>/<str:token>/",
+        "confirm-email/<str:uuidb64>/<str:token>/",
         ConfirmEmailView.as_view(),
         name="confirm-email",
     ),

@@ -88,8 +88,9 @@ def initiate_payment(order, amount_override=None):
             # create payment record
             payment = Payment.objects.create(
                 order=order,
+                customer=order.customer,
                 amount=amount,
-                reference=payment_data["data"]["reference"],
+                reference=payment_data.get("data", {}).get("reference"),
                 status=PaymentStatus.PENDING,
                 payment_method="paystack",
             )
